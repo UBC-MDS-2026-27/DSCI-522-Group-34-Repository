@@ -1,0 +1,21 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python / uv
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Quarto
+/.quarto/
+analysis/.quarto/
+*_cache/
+
+# Editors
+.vscode/
+.idea/
+
+# Downloaded archive (only the extracted CSV is kept)
+data/raw/*.zip
