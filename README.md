@@ -22,7 +22,7 @@ The analysis downloads the data automatically into `data/raw/` the first time th
 
 You need two programs installed on your computer:
 
-- [uv](https://docs.astral.sh/uv/getting-started/installation/) (version 0.5 or later), which installs Python and all the packages listed in `pyproject.toml`; and
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) (version 0.9 or later), which installs Python and all the packages listed in `pyproject.toml`; and
 - [Quarto](https://quarto.org/docs/get-started/) (version 1.6 or later), which renders the report.
 
 You can check that both are installed by running `uv --version` and `quarto --version` in a terminal.
@@ -59,7 +59,7 @@ Open `analysis/[TODO: report-name].html` in a web browser to read the report. Re
 ## Dependencies
 
 - [uv](https://docs.astral.sh/uv/) and [Quarto](https://quarto.org/)
-- Python 3.13 and the packages listed in [`pyproject.toml`](pyproject.toml), with exact versions pinned in [`uv.lock`](uv.lock): pandas, scikit-learn, Altair, ipykernel, nbformat, nbclient, PyYAML and tabulate.
+- Python 3.14 and the packages listed in [`pyproject.toml`](pyproject.toml), with exact versions pinned in [`uv.lock`](uv.lock): pandas, scikit-learn, Altair, ipykernel, nbformat, nbclient, PyYAML and tabulate.
 
 ## Repository structure
 
