@@ -1,0 +1,55 @@
+---
+title: "Predicting Extra Paid Mathematics Classes from Student Background"
+author: "Vikasini Senthilkumar, Shorya Jain, Chengyan(Yan) Zhao, Arunark Singh "
+format: html
+---
+
+```{r}
+#| message: false
+library(tidyverse)
+```
+
+```{r}
+url <- "https://archive.ics.uci.edu/static/public/320/student+performance.zip"
+
+download.file(url,"../data/raw/student_performance.zip", mode = "wb")
+unzip("../data/raw/student_performance.zip", exdir = "../data/raw")
+unzip("../data/raw/student.zip", exdir = "../data/raw")
+student_math <- read_delim("../data/raw/student-mat.csv", delim = ";")
+
+file.remove("../data/raw/student_performance.zip", "../data/raw/student.zip", "../data/raw/student-por.csv")
+```
+
+```{r}
+student_math_clean <- student_math |> 
+  select(paid, Medu, Fedu, Mjob, Fjob, famsize, Pstatus, studytime, 
+         failures, famsup, school, address) |> 
+  rename(paid_classes = paid,
+         mother_edu = Medu,
+         father_edu = Fedu,
+         mother_job = Mjob,
+         father_job = Fjob,
+         family_size = famsize, 
+         parent_status = Pstatus, 
+         past_failures = failures,
+         family_support = famsup
+         ) |> 
+  mutate(address = case_when(address == "U" ~ "urban", 
+                             address == "R" ~ "rural"),
+         parent_status = case_when(parent_status == "T" ~ "together",
+                                   parent_status == "A" ~ "apart"),
+         family_size = case_when(family_size == "LE3" ~ "3 or fewer", 
+                                 family_size == "GT3" ~ "greater than 3"),
+         school = case_when(school == "GP" ~ "Gabriel Pereira",
+                            school == "MS" ~ "Mousinho da Silveira")) |> 
+  mutate(across(where(is.character), as.factor)) |> 
+  mutate(studytime = factor(studytime, levels = 1:4,
+                            labels = c("<2 hours", "2-5 hours", 
+                                       "6-10 hours", ">10 hours")),
+         paid_classes = factor(paid_classes, levels = c("yes", "no")))
+  
+
+write_csv(student_math_clean, "../data/processed/student_math_clean.csv")
+
+student_math_clean
+```
