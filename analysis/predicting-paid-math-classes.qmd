@@ -17,7 +17,7 @@ unzip("../data/raw/student_performance.zip", exdir = "../data/raw")
 unzip("../data/raw/student.zip", exdir = "../data/raw")
 student_math <- read_delim("../data/raw/student-mat.csv", delim = ";")
 
-file.remove("../data/raw/student_performance.zip", "../data/raw/student.zip", "../data/raw/student-por.csv")
+file.remove("../data/raw/student_performance.zip", "../data/raw/student.zip")
 ```
 
 ```{r}
@@ -45,11 +45,35 @@ student_math_clean <- student_math |>
   mutate(across(where(is.character), as.factor)) |> 
   mutate(studytime = factor(studytime, levels = 1:4,
                             labels = c("<2 hours", "2-5 hours", 
-                                       "6-10 hours", ">10 hours")),
+                                       "5-10 hours", ">10 hours")),
          paid_classes = factor(paid_classes, levels = c("yes", "no")))
   
 
 write_csv(student_math_clean, "../data/processed/student_math_clean.csv")
 
-student_math_clean
+head(student_math_clean)
+```
+
+```{r}
+#| include: false
+library(reticulate)
+use_virtualenv("../.venv", required = TRUE)
+```
+
+```{python}
+import pandas as pd
+from sklearn.model_selection import train_test_split
+```
+
+```{python}
+math_student = pd.read_csv("../data/processed/student_math_clean.csv")
+
+# Splitting the data into 75% training and 25% test
+train_df, test_df = train_test_split(math_student, test_size = 0.25, stratify=math_student["paid_classes"], random_state = 522)
+
+train_df.to_csv("../data/processed/student_math_train.csv", index=False)
+test_df.to_csv("../data/processed/student_math_test.csv", index=False)
+
+print(train_df.shape, test_df.shape)
+print(train_df["paid_classes"].value_counts())
 ```
