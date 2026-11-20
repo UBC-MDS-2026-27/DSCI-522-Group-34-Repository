@@ -3,17 +3,21 @@ title: "Predicting Extra Paid Mathematics Classes from Student Background"
 author: "Vikasini Senthilkumar, Shorya Jain, Chengyan(Yan) Zhao, Arunark Singh "
 format: html
 ---
+
 ## Summary
 
 We looked at whether students’ family backgrounds and study habits could help predict who attended paid mathematics classes. Using data from 395 students at two Portuguese schools, we compared three models. Logistic regression performed best during cross-validation, with an average accuracy of 64.2%. On the test data, its accuracy was 58.6%, slightly higher than the 54.5% accuracy of always predicting the most common outcome. This suggests the information in our dataset offers some help with prediction, but the results are modest. The data covers only two schools, and the model doesn’t include every possible reason a student might attend tutoring. It also shows patterns in the data, not that a student’s background or study habits cause them to take paid classes.
 
 ## Introduction
 
-Private tutoring provides students with additional academic instruction outside regular school lessons. This includes help with coursework and examination preparation. In their study of tutoring agencies in Ontario, Aurini and Davies (2004) describe how private tutoring expanded from informal assistance into organized learning centres that offer a broader range of educational services. This suggests that paid tuition is becoming a trend. However, we believe that participation in paid tutoring may reflect more than academic difficulty. Using German household survey data, Hille, Spieß, and Staneva (2016) document differences in tutoring participation across income groups. They highlighted the importance of considering family resources when studying access to supplementary education. In Portugal, Fonseca (1996) examines how family resources and competition for educational qualifications shape educational opportunities and strategies. Although this research concerns higher education rather than mathematics tutoring specifically, it still provides historical context for examining family background in educational participation. More directly, Qu (2025) analyzes mathematics achievement among students in two Portuguese secondary schools. This research considered family, individual, and school-related characteristics, including paid tutoring. Building on these perspectives, our study aim to understand which student characteristics help distinguish participants from non-participants. This may inform further research into access to supplementary learning opportunities. We ask: Can students’ family backgrounds and study-related characteristics predict whether they attend paid tutoring in mathematics? To answer this question, we use the mathematics subset of the Student Performance dataset from the UCI Machine Learning Repository (Cortez 2008). It contains 395 student records from two Portuguese secondary schools, collected through school reports and questionnaires. Where each row represents one student’s record for the mathematics course. Our predictors include parental education and occupations, family size, parents’ cohabitation status, guardian, weekly study time, previous class failures, and family and school educational support. The response variable is paid mathematics tutoring participation, recorded as “yes” or “no”. Which makes this a binary classification problem. We exclude first-period, second-period, and final grades because these may already reflect tutoring participation. Our analysis evaluates predictive relationships within this sample. It does not establish why students attend tutoring or whether tutoring improves their grades.
+Private tutoring provides students with additional academic instruction outside regular school lessons. This includes help with coursework and examination preparation. In their study of tutoring agencies in Ontario, Aurini and Davies (2004) describe how private tutoring expanded from informal assistance into organized learning centres that offer a broader range of educational services. This suggests that paid tuition is becoming a trend. However, we believe that participation in paid tutoring may reflect more than academic difficulty. Using German household survey data, Hille, Spieß, and Staneva (2016) document differences in tutoring participation across income groups. They highlighted the importance of considering family resources when studying access to supplementary education. In Portugal, Fonseca (1996) examines how family resources and competition for educational qualifications shape educational opportunities and strategies. Although this research concerns higher education rather than mathematics tutoring specifically, it still provides historical context for examining family background in educational participation. More directly, Qu (2025) analyzes mathematics achievement among students in two Portuguese secondary schools. This research considered family, individual, and school-related characteristics, including paid tutoring. Building on these perspectives, our study aims to understand which student characteristics help distinguish participants from non-participants. This may inform further research into access to supplementary learning opportunities. We ask: Can students’ family backgrounds and study-related characteristics predict whether they attend paid tutoring in mathematics? To answer this question, we use the mathematics subset of the Student Performance dataset from the UCI Machine Learning Repository (Cortez 2008). It contains 395 student records from two Portuguese secondary schools, collected through school reports and questionnaires, where each row represents one student’s record for the mathematics course. Our predictors include parents’ education levels and occupations, family size, whether the parents live together, weekly study time, past class failures, family educational support, the school the student attends, and whether the student lives in an urban or rural area. The response variable is paid mathematics tutoring participation, recorded as “yes” or “no”, which makes this a binary classification problem. We exclude first-period, second-period, and final grades because these may already reflect tutoring participation. Our analysis evaluates predictive relationships within this sample. It does not establish why students attend tutoring or whether tutoring improves their grades.
 
 ## Methods
 
-### Data
+### Data source
+
+We downloaded the student performance data set directly from the UCI Machine Learning Repository using code, so that anyone running this report gets the same data. The download is a zip file that contains a second zip file, so we unzipped both and saved the original files in the raw data folder. We then read the mathematics file, which uses semicolons to separate values, and deleted the two zip files because they are no longer needed.
+
 ```{r}
 #| message: false
 library(tidyverse)
@@ -25,10 +29,28 @@ url <- "https://archive.ics.uci.edu/static/public/320/student+performance.zip"
 download.file(url,"../data/raw/student_performance.zip", mode = "wb")
 unzip("../data/raw/student_performance.zip", exdir = "../data/raw")
 unzip("../data/raw/student.zip", exdir = "../data/raw")
-student_math <- read_delim("../data/raw/student-mat.csv", delim = ";")
+student_math <- read_delim("../data/raw/student-mat.csv", delim = ";", show_col_types = FALSE)
 
 file.remove("../data/raw/student_performance.zip", "../data/raw/student.zip")
 ```
+
+### Data cleaning
+
+To prepare the data for analysis, we kept only the response variable and the 11 predictors related to our question. We gave each variable a clearer name and converted all text variables into categories with "yes" as the first level of the response variable. The data had no missing values or duplicate rows.
+
+Several variables were stored as short codes, so we replaced them with readable labels.
+
+- Home address is now "urban" and "rural" instead of "U" and "R".
+
+- Parents' living situation is "together" and "apart" instead of "T" and "A".
+
+- Family size is "3 or fewer" and "greater than 3" instead of "LE3" and "GT3".
+
+- The two schools are shown by their full names.
+
+- Weekly study time was recorded as a number from 1 to 4, so we replaced each number with the time range it stands for, i.e. less than 2 hours, 2 to 5 hours, 5 to 10 hours, and more than 10 hours.
+
+We saved the cleaned data to the processed data folder.
 
 ```{r}
 student_math_clean <- student_math |> 
@@ -64,7 +86,10 @@ write_csv(student_math_clean, "../data/processed/student_math_clean.csv")
 head(student_math_clean)
 ```
 
-## Analysis
+### Splitting the data
+
+Before exploring the data, we split it into a training set of 75% with 296 students and a test set of 25% with 99 students. We used a stratified split so that both sets have a similar share of students who take paid classes. We also fixed the random seed so the split is the same every time the report runs. All exploratory analysis and model building use only the training set, and the test set is kept aside for the final evaluation.
+
 ```{r}
 #| include: false
 library(reticulate)
@@ -86,14 +111,67 @@ train_df.to_csv("../data/processed/student_math_train.csv", index=False)
 test_df.to_csv("../data/processed/student_math_test.csv", index=False)
 
 print(train_df.shape, test_df.shape)
-print(train_df["paid_classes"].value_counts())
 ```
+
+### Exploratory Data Analysis
+
+We used the training set to summarize the participation in paid mathematics classes. We also examine whether participation varied by weekly study time. Table 1 reports the number and percentage of students in each participation group. Of the 296 students, 136 (45.9%) attended paid classes and 160 (54.1%) did not. Therefore the two groups are fairly balanced, with slightly more students in the non-participation group.
+
+```{python}
+paid_summary = (
+       train_df["paid_classes"]
+       .value_counts(dropna=False)
+       .rename_axis("Attended paid classes")
+       .reset_index(name="Students")
+)
+
+paid_summary["Percent"] = (
+       100 * paid_summary["Students"] / len(train_df)
+).round(1)
+
+print(paid_summary.to_string(index=False))
+```
+
+**Table 1.** Number and percentage of students in the training set who attended paid mathematics classes.
+
+The dataset records weekly study time in four categories: less than 2 hours, 2-5 hours, 5-10 hours and more than 10 hours. Figure 1 shows the percentage of students attending paid classes within each study-time group, using only the training set. Participation in paid mathematics classes was higher among students who reported more weekly study time. About 33% of students who studied less than 2 hours per week attended paid classes compared with about 62% of those who studied more than 10 hours per week.
+
+```{python}
+import altair as alt
+
+study_order = ["<2 hours", "2-5 hours", "5-10 hours", ">10 hours"]
+
+# Calculate the proportion of students who attended paid classes in each study-time group.
+study_summary = (
+       train_df.dropna(subset=["studytime", "paid_classes"])
+       .assign(attend=lambda df: df["paid_classes"].eq("yes"))
+       .groupby("studytime", as_index=False)
+       .agg(participation_rate=("attend", "mean"))
+)
+
+# Plot each group's participation rate as a percentage, ordered by weekly study time.
+alt.Chart(study_summary).mark_bar().encode(
+       y=alt.Y(
+              "studytime:N",
+              title="Weekly study time",
+              sort=["<2 hours", "2-5 hours", "5-10 hours", ">10 hours"]
+       ),
+       x=alt.X(
+              "participation_rate:Q",
+              title="Percentage attending paid mathematics classes",
+              axis=alt.Axis(format=".0%"),
+              scale=alt.Scale(domain=[0,1]),
+       ),
+).properties(width=500, height=180)
+```
+
+**Figure 1.** Percentage of students attending paid mathematics classes within each weekly study-time group in the training set.
 
 ### Classification Model
 
 We compare three classifiers using five-fold stratified cross-validation on the training data. The model with the highest mean validation accuracy is selected. We then fit that model on the full training set and report its performance once on the held-out test set. The test set is not used to choose a model.
 
-We use logistic regression as a simple linear baseline, a shallow decision tree for an interpretable rule-based model, and a small random forest to check whether combining trees improves prediction. The categorical predictors are one-hot encoded, and numeric predictors are standardized within each training fold. The same preprocessing is applied consistently to all three models.
+We use logistic regression as a simple linear baseline, a shallow decision tree for an interpretable rule-based model, and a small random forest to check whether combining trees improves prediction. The categorical predictors are one-hot encoded, and numeric predictors are standardized within each training fold. The same pre-processing is applied consistently to all three models.
 
 #### Cross-validation model fitting
 
@@ -164,65 +242,13 @@ cv_results = pd.DataFrame(cv_rows).sort_values(
 ).reset_index(drop=True)
 ```
 
-## Results & Discussion
-
-### Exploratory Data Analysis
-
-We used the training set to summarize the participation in paid mathematics classes. We want to examine whether participation varied by weekly study time. Table 1 reports the number and percentage of students in each participation group. Of the 296 students, 136 (45.9%) attended paid classes and 160 (54.1%) did not. Therefore the two groups are fairly balanced, with slightly more students in the non-participation group.
-
-```{python}
-paid_summary = (
-       train_df["paid_classes"]
-       .value_counts(dropna=False)
-       .rename_axis("Attended paid classes")
-       .reset_index(name="Students")
-)
-
-paid_summary["Percent"] = (
-       100 * paid_summary["Students"] / len(train_df)
-).round(1)
-
-print(paid_summary.to_string(index=False))
-```
-
-The dataset records weekly study time in four categories: less than 2 hours, 2-5 hours, 5-10 hours and more than 10 hours. Figure 1 shows the percentage of students attending paid classes within each study-time group, using only the training set. Participation in paid mathematics classes was higher among students who reported more weekly study time. About 33% of students who studied less than 2 hours per week attended paid classes, and compare with about 62% of those who studied more than 10 hours per week. (Figure 1).
-
-```{python}
-import altair as alt
-
-study_order = ["<2 hours", "2-5 hours", "5-10 hours", ">10 hours"]
-
-# Calculate the proportion of students who attended paid classes in each study-time group.
-study_summary = (
-       train_df.dropna(subset=["studytime", "paid_classes"])
-       .assign(attend=lambda df: df["paid_classes"].eq("yes"))
-       .groupby("studytime", as_index=False)
-       .agg(participation_rate=("attend", "mean"))
-)
-
-# Plot each group's participation rate as a percentage, ordered by weekly study time.
-alt.Chart(study_summary).mark_bar().encode(
-       y=alt.Y(
-              "studytime:N",
-              title="Weekly study time",
-              sort=["<2 hours", "2-5 hours", "5-10 hours", ">10 hours"]
-       ),
-       x=alt.X(
-              "participation_rate:Q",
-              title="Percentage attending paid mathematics classes",
-              axis=alt.Axis(format=".0%"),
-              scale=alt.Scale(domain=[0,1]),
-       ),
-).properties(width=500, height=180)
-```
-
-**Figure 1.** Percentage of students attending paid mathematics classes within each weekly study-time group in the training set.
+## Results
 
 ### Cross Validation Model Comparison and Selection
 
 ```{python}
 #| echo: true
-print("Table 1. Five-fold cross-validation accuracy on training data.")
+print("Table 2. Five-fold cross-validation accuracy on training data.")
 cv_results.style.format({
     "Mean validation accuracy": "{:.3f}",
     "SD across folds": "{:.3f}",
@@ -296,7 +322,7 @@ results = pd.DataFrame([
     },
 ])
 
-print("Table 2. Held-out test metrics for the selected model and majority baseline.")
+print("Table 3. Held-out test metrics for the selected model and majority baseline.")
 results.style.format({
     "Accuracy": "{:.3f}",
     "Precision (yes)": "{:.3f}",
@@ -310,7 +336,7 @@ confusion = pd.DataFrame(
     index=pd.Index(["no", "yes"], name="Actual"),
     columns=pd.Index(["no", "yes"], name="Predicted"),
 )
-print("Table 3. Confusion matrix for the selected model on the held-out test set.")
+print("Table 4. Confusion matrix for the selected model on the held-out test set.")
 display(confusion)
 
 cm_long = (
@@ -330,7 +356,7 @@ heatmap + cell_text
 
 **Figure 3.** Confusion matrix for the selected model on the held-out test set.
 
-The five-fold cross-validation comparison selected logistic regression, with a mean validation accuracy of 64.2% (standard deviation 2.4 percentage points). On the held-out test set, it achieved 58.6% accuracy, compared with 54.5% for the majority-class baseline. For students who attended paid classes, precision was 53.8%, recall was 62.2%, and F1 was 0.577. The confusion matrix shows 28 correctly identified students who attended classes, 30 correctly identified students who did not, 24 false positives, and 17 false negatives. Table 1 is used only for model selection; Tables 2 and 3 and Figure 2 report final test-set performance.
+The five-fold cross-validation comparison selected logistic regression, with a mean validation accuracy of 64.2% (standard deviation 2.4 percentage points). On the held-out test set, it achieved 58.6% accuracy, compared with 54.5% for the majority-class baseline. For students who attended paid classes, precision was 53.8%, recall was 62.2%, and F1 was 0.577. The confusion matrix shows 28 correctly identified students who attended classes, 30 correctly identified students who did not, 24 false positives, and 17 false negatives. Table 2 and Figure 2 are used only for model selection; Tables 3 and 4 and Figure 3 report final test-set performance.
 
 ## Discussion
 
@@ -342,12 +368,12 @@ A useful next step would be to repeat the analysis with students from more schoo
 
 ## References
 
-Aurini, Janice, and Scott Davies. "The transformation of private tutoring: Education in a franchise form." The Canadian Journal of Sociology 29, no. 3 (2004): 419-438.
-
-Cortez, Paulo. 2008. Student Performance. UCI Machine Learning Repository. https://doi.org/10.24432/C5TG7T.
-
-Hille, Adrian, C. Katharina Spieß, and Mila Staneva. "More and more students, especially those from middle-income households, are using private tutoring." DIW Economic Bulletin 6, no. 6 (2016): 63-71.
-
-Qu, Qing. "Analysis of the Factors Affecting Academic Performance of Students in Two Portuguese High Schools: School." In Proceedings of the 2025 10th International Conference on Social Sciences and Economic Development (ICSSED 2025), p. 39. Springer Nature, 2025.
-
-Teixeira, Pedro N., Pedro Luís Silva, Ricardo Biscaia, and Carla Sá. "Competition and diversification in higher education: Analysing impacts on access and equity in the case of Portugal." European Journal of Education 57, no. 2 (2022): 235-254.
+Aurini, Janice, and Scott Davies. 2004. “The Transformation of Private Tutoring: Education in a Franchise Form.” *The Canadian Journal of Sociology* 29 (3): 419-438.\
+\
+Cortez, Paulo. 2008. "Student Performance." UCI Machine Learning Repository. https://doi.org/10.24432/C5TG7T.\
+\
+Fonseca, Maria Manuel Vieira da. 1996. “Recent Trends in Portuguese Higher Education: Closure, Usurpation and Differentiation.” *Mediterranean Journal of Educational Studies* 1 (2): 1–33.\
+\
+Hille, Adrian, C. Katharina Spieß, and Mila Staneva. 2016. “More and More Students, Especially Those from Middle-Income Households, Are Using Private Tutoring.” *DIW Economic Bulletin* 6 (6): 63-71.\
+\
+Qu, Qing. 2025. “Analysis of the Factors Affecting Academic Performance of Students in Two Portuguese High Schools: School, Family, and Individual Factors” In *Proceedings of the 2025 10th International Conference on Social Sciences and Economic Development (ICSSED 2025)*, 39-48. Advances in Economics, Business and Management Research. Altantis Press. https://doi.org/10.2991/978-94-6463-734-2_6
