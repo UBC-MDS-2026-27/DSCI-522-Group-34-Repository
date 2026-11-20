@@ -3,7 +3,15 @@ title: "Predicting Extra Paid Mathematics Classes from Student Background"
 author: "Vikasini Senthilkumar, Shorya Jain, Chengyan(Yan) Zhao, Arunark Singh "
 format: html
 ---
+## Summary
 
+## Introduction
+
+Private tutoring provides students with additional academic instruction outside regular school lessons. This includes help with coursework and examination preparation. In their study of tutoring agencies in Ontario, Aurini and Davies (2004) describe how private tutoring expanded from informal assistance into organized learning centres that offer a broader range of educational services. This suggests that paid tuition is becoming a trend. However, we believe that participation in paid tutoring may reflect more than academic difficulty. Using German household survey data, Hille, Spieß, and Staneva (2016) document differences in tutoring participation across income groups. They highlighted the importance of considering family resources when studying access to supplementary education. In Portugal, Fonseca (1996) examines how family resources and competition for educational qualifications shape educational opportunities and strategies. Although this research concerns higher education rather than mathematics tutoring specifically, it still provides historical context for examining family background in educational participation. More directly, Qu (2025) analyzes mathematics achievement among students in two Portuguese secondary schools. This research considered family, individual, and school-related characteristics, including paid tutoring. Building on these perspectives, our study aim to understand which student characteristics help distinguish participants from non-participants. This may inform further research into access to supplementary learning opportunities. We ask: Can students’ family backgrounds and study-related characteristics predict whether they attend paid tutoring in mathematics? To answer this question, we use the mathematics subset of the Student Performance dataset from the UCI Machine Learning Repository (Cortez 2008). It contains 395 student records from two Portuguese secondary schools, collected through school reports and questionnaires. Where each row represents one student’s record for the mathematics course. Our predictors include parental education and occupations, family size, parents’ cohabitation status, guardian, weekly study time, previous class failures, and family and school educational support. The response variable is paid mathematics tutoring participation, recorded as “yes” or “no”. Which makes this a binary classification problem. We exclude first-period, second-period, and final grades because these may already reflect tutoring participation. Our analysis evaluates predictive relationships within this sample. It does not establish why students attend tutoring or whether tutoring improves their grades.
+
+## Methods
+
+### Data
 ```{r}
 #| message: false
 library(tidyverse)
@@ -54,6 +62,7 @@ write_csv(student_math_clean, "../data/processed/student_math_clean.csv")
 head(student_math_clean)
 ```
 
+## Analysis
 ```{r}
 #| include: false
 library(reticulate)
@@ -77,3 +86,70 @@ test_df.to_csv("../data/processed/student_math_test.csv", index=False)
 print(train_df.shape, test_df.shape)
 print(train_df["paid_classes"].value_counts())
 ```
+
+
+## Results & Discussion
+
+### Exploratory Data Analysis
+
+We used the training set to summarize the participation in paid mathematics classes. We want to examine whether participation varied by weekly study time. Table 1 reports the number and percentage of students in each participation group. Of the 296 students, 136 (45.9%) attended paid classes and 160 (54.1%) did not. Therefore the two groups are fairly balanced, with slightly more students in the non-participation group.
+
+```{python}
+paid_summary = (
+       train_df["paid_classes"]
+       .value_counts(dropna=False)
+       .rename_axis("Attended paid classes")
+       .reset_index(name="Students")
+)
+
+paid_summary["Percent"] = (
+       100 * paid_summary["Students"] / len(train_df)
+).round(1)
+
+print(paid_summary.to_string(index=False))
+```
+
+The dataset records weekly study time in four categories: less than 2 hours, 2-5 hours, 5-10 hours and more than 10 hours. Figure 1 shows the percentage of students attending paid classes within each study-time group, using only the training set. Participation in paid mathematics classes was higher among students who reported more weekly study time. About 33% of students who studied less than 2 hours per week attended paid classes, and compare with about 62% of those who studied more than 10 hours per week. (Figure 1).
+
+```{python}
+import altair as alt
+
+study_order = ["<2 hours", "2-5 hours", "5-10 hours", ">10 hours"]
+
+# Calculate the proportion of students who attended paid classes in each study-time group.
+study_summary = (
+       train_df.dropna(subset=["studytime", "paid_classes"])
+       .assign(attend=lambda df: df["paid_classes"].eq("yes"))
+       .groupby("studytime", as_index=False)
+       .agg(participation_rate=("attend", "mean"))
+)
+
+# Plot each group's participation rate as a percentage, ordered by weekly study time.
+alt.Chart(study_summary).mark_bar().encode(
+       y=alt.Y(
+              "studytime:N",
+              title="Weekly study time",
+              sort=["<2 hours", "2-5 hours", "5-10 hours", ">10 hours"]
+       ),
+       x=alt.X(
+              "participation_rate:Q",
+              title="Percentage attending paid mathematics classes",
+              axis=alt.Axis(format=".0%"),
+              scale=alt.Scale(domain=[0,1]),
+       ),
+).properties(width=500, height=180)
+```
+
+**Figure 1.** Percentage of students attending paid mathematics classes within each weekly study-time group in the training set.
+
+## References
+
+Aurini, Janice, and Scott Davies. "The transformation of private tutoring: Education in a franchise form." The Canadian Journal of Sociology 29, no. 3 (2004): 419-438.
+
+Cortez, Paulo. 2008. Student Performance. UCI Machine Learning Repository. https://doi.org/10.24432/C5TG7T.
+
+Hille, Adrian, C. Katharina Spieß, and Mila Staneva. "More and more students, especially those from middle-income households, are using private tutoring." DIW Economic Bulletin 6, no. 6 (2016): 63-71.
+
+Qu, Qing. "Analysis of the Factors Affecting Academic Performance of Students in Two Portuguese High Schools: School." In Proceedings of the 2025 10th International Conference on Social Sciences and Economic Development (ICSSED 2025), p. 39. Springer Nature, 2025.
+
+Teixeira, Pedro N., Pedro Luís Silva, Ricardo Biscaia, and Carla Sá. "Competition and diversification in higher education: Analysing impacts on access and equity in the case of Portugal." European Journal of Education 57, no. 2 (2022): 235-254.
