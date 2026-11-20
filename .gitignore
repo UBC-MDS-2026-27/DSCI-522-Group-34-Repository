@@ -19,3 +19,4 @@ analysis/.quarto/
 
 # Downloaded archive (only the extracted CSV is kept)
 data/raw/*.zip
+.Rproj.user
