@@ -1,7 +1,7 @@
 paid_classes,mother_edu,father_edu,mother_job,father_job,family_size,parent_status,studytime,past_failures,family_support,school,address
 no,3,2,services,at_home,greater than 3,together,<2 hours,3,yes,Gabriel Pereira,urban
 yes,4,3,teacher,services,3 or fewer,together,<2 hours,0,no,Gabriel Pereira,urban
-no,2,3,other,other,greater than 3,together,6-10 hours,1,no,Gabriel Pereira,rural
+no,2,3,other,other,greater than 3,together,5-10 hours,1,no,Gabriel Pereira,rural
 no,4,3,teacher,services,3 or fewer,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,1,1,health,other,3 or fewer,together,<2 hours,1,yes,Gabriel Pereira,urban
 no,2,1,at_home,services,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,rural
@@ -9,16 +9,16 @@ yes,3,2,health,health,greater than 3,together,>10 hours,0,yes,Gabriel Pereira,ur
 yes,2,2,other,other,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,urban
 no,3,4,at_home,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,3,2,services,services,greater than 3,together,<2 hours,1,yes,Gabriel Pereira,urban
-yes,4,3,teacher,health,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
+yes,4,3,teacher,health,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
 yes,2,2,other,other,greater than 3,apart,2-5 hours,0,yes,Gabriel Pereira,urban
-yes,3,2,services,other,3 or fewer,together,6-10 hours,0,yes,Gabriel Pereira,rural
+yes,3,2,services,other,3 or fewer,together,5-10 hours,0,yes,Gabriel Pereira,rural
 no,1,1,at_home,other,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,urban
 yes,3,3,other,other,3 or fewer,apart,<2 hours,0,no,Gabriel Pereira,urban
 yes,1,2,at_home,services,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,urban
 yes,3,1,services,other,3 or fewer,together,>10 hours,0,yes,Gabriel Pereira,rural
 yes,3,1,at_home,other,greater than 3,together,2-5 hours,0,yes,Mousinho da Silveira,rural
 no,3,3,health,other,greater than 3,apart,2-5 hours,0,yes,Gabriel Pereira,urban
-yes,4,3,other,at_home,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
+yes,4,3,other,at_home,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
 no,1,1,other,services,3 or fewer,together,<2 hours,0,no,Mousinho da Silveira,urban
 yes,4,3,other,other,greater than 3,together,>10 hours,0,yes,Gabriel Pereira,urban
 yes,3,2,other,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
@@ -29,7 +29,7 @@ yes,3,1,services,other,greater than 3,together,>10 hours,0,yes,Gabriel Pereira,u
 yes,4,3,teacher,other,3 or fewer,together,2-5 hours,0,no,Gabriel Pereira,urban
 no,2,1,services,other,3 or fewer,apart,<2 hours,3,no,Gabriel Pereira,urban
 yes,4,4,teacher,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
-no,2,1,services,other,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
+no,2,1,services,other,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
 no,1,1,other,other,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,urban
 no,2,2,services,services,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,urban
 no,3,3,services,services,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
@@ -39,7 +39,7 @@ no,2,2,services,health,3 or fewer,together,>10 hours,0,yes,Gabriel Pereira,urban
 no,2,1,other,other,greater than 3,together,<2 hours,0,no,Mousinho da Silveira,rural
 yes,1,2,services,services,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,urban
 no,2,2,at_home,other,greater than 3,together,2-5 hours,1,no,Gabriel Pereira,urban
-yes,2,2,at_home,at_home,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
+yes,2,2,at_home,at_home,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
 yes,2,2,services,other,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,urban
 yes,2,3,other,services,greater than 3,together,>10 hours,0,yes,Gabriel Pereira,urban
 yes,4,2,other,other,greater than 3,together,<2 hours,1,no,Mousinho da Silveira,rural
@@ -49,10 +49,10 @@ no,2,2,other,other,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,rural
 no,2,4,services,services,3 or fewer,together,2-5 hours,0,no,Gabriel Pereira,urban
 yes,2,4,other,health,3 or fewer,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,4,4,services,services,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
-yes,2,3,other,other,greater than 3,together,6-10 hours,0,no,Gabriel Pereira,urban
+yes,2,3,other,other,greater than 3,together,5-10 hours,0,no,Gabriel Pereira,urban
 no,4,0,teacher,other,greater than 3,together,>10 hours,0,no,Gabriel Pereira,urban
 yes,4,4,health,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
-yes,4,3,other,other,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
+yes,4,3,other,other,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
 no,3,3,other,services,3 or fewer,together,2-5 hours,1,yes,Gabriel Pereira,rural
 no,2,1,other,other,greater than 3,together,<2 hours,3,yes,Gabriel Pereira,urban
 yes,4,4,teacher,services,3 or fewer,together,2-5 hours,0,no,Mousinho da Silveira,rural
@@ -63,7 +63,7 @@ no,1,1,other,other,greater than 3,together,2-5 hours,2,yes,Gabriel Pereira,rural
 no,4,2,teacher,services,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,rural
 yes,2,2,services,services,greater than 3,together,<2 hours,2,yes,Gabriel Pereira,urban
 yes,4,3,other,other,3 or fewer,apart,2-5 hours,0,yes,Gabriel Pereira,urban
-no,3,3,services,other,greater than 3,together,6-10 hours,1,yes,Gabriel Pereira,rural
+no,3,3,services,other,greater than 3,together,5-10 hours,1,yes,Gabriel Pereira,rural
 no,3,3,other,other,3 or fewer,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,2,4,services,services,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,3,1,other,other,greater than 3,together,2-5 hours,1,no,Gabriel Pereira,rural
@@ -95,51 +95,51 @@ yes,1,1,other,other,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,urban
 no,3,3,services,services,greater than 3,together,2-5 hours,0,yes,Mousinho da Silveira,urban
 yes,2,2,services,services,3 or fewer,together,2-5 hours,0,no,Gabriel Pereira,urban
 no,1,2,other,services,greater than 3,together,2-5 hours,0,no,Mousinho da Silveira,rural
-no,2,2,other,other,greater than 3,apart,6-10 hours,0,yes,Gabriel Pereira,urban
+no,2,2,other,other,greater than 3,apart,5-10 hours,0,yes,Gabriel Pereira,urban
 yes,1,1,other,services,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,4,3,teacher,services,greater than 3,together,>10 hours,0,yes,Gabriel Pereira,urban
 no,2,2,other,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,3,1,other,other,greater than 3,together,<2 hours,0,no,Gabriel Pereira,urban
 no,2,1,other,other,greater than 3,together,<2 hours,0,no,Gabriel Pereira,rural
-no,3,4,services,teacher,greater than 3,together,6-10 hours,2,yes,Gabriel Pereira,rural
-yes,3,3,services,services,greater than 3,together,6-10 hours,2,yes,Gabriel Pereira,rural
+no,3,4,services,teacher,greater than 3,together,5-10 hours,2,yes,Gabriel Pereira,rural
+yes,3,3,services,services,greater than 3,together,5-10 hours,2,yes,Gabriel Pereira,rural
 yes,3,2,services,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,3,3,services,services,greater than 3,together,2-5 hours,0,yes,Mousinho da Silveira,urban
 no,3,3,other,services,3 or fewer,apart,2-5 hours,0,yes,Gabriel Pereira,urban
 no,1,2,other,at_home,3 or fewer,together,2-5 hours,0,yes,Gabriel Pereira,urban
 yes,4,4,other,other,greater than 3,together,>10 hours,0,yes,Gabriel Pereira,rural
-yes,4,4,health,health,3 or fewer,together,6-10 hours,0,yes,Gabriel Pereira,urban
+yes,4,4,health,health,3 or fewer,together,5-10 hours,0,yes,Gabriel Pereira,urban
 no,4,4,services,teacher,greater than 3,together,2-5 hours,1,yes,Gabriel Pereira,urban
 yes,4,3,other,other,greater than 3,together,2-5 hours,2,no,Gabriel Pereira,urban
 yes,2,2,other,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,rural
 yes,4,4,teacher,teacher,greater than 3,together,2-5 hours,0,no,Mousinho da Silveira,urban
-yes,4,3,teacher,other,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,rural
+yes,4,3,teacher,other,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,rural
 yes,1,1,other,other,3 or fewer,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,1,3,at_home,services,greater than 3,together,2-5 hours,3,no,Gabriel Pereira,urban
-yes,2,2,at_home,other,greater than 3,together,6-10 hours,0,no,Mousinho da Silveira,rural
-yes,4,4,teacher,services,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
+yes,2,2,at_home,other,greater than 3,together,5-10 hours,0,no,Mousinho da Silveira,rural
+yes,4,4,teacher,services,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
 yes,4,4,teacher,services,greater than 3,together,<2 hours,0,no,Gabriel Pereira,urban
 yes,2,2,services,services,greater than 3,together,>10 hours,0,yes,Gabriel Pereira,urban
 yes,3,2,services,other,3 or fewer,together,2-5 hours,1,yes,Gabriel Pereira,urban
-yes,2,4,services,health,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,rural
+yes,2,4,services,health,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,rural
 no,2,1,services,at_home,3 or fewer,together,2-5 hours,1,no,Gabriel Pereira,urban
 no,2,2,at_home,other,greater than 3,together,>10 hours,0,no,Gabriel Pereira,rural
 yes,2,1,other,other,greater than 3,apart,2-5 hours,0,no,Gabriel Pereira,urban
 no,1,4,at_home,other,3 or fewer,apart,2-5 hours,0,no,Mousinho da Silveira,rural
 no,0,1,at_home,other,greater than 3,together,2-5 hours,3,yes,Gabriel Pereira,urban
-yes,4,2,health,services,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
-yes,2,2,at_home,services,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
+yes,4,2,health,services,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
+yes,2,2,at_home,services,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
 yes,4,4,other,teacher,3 or fewer,together,<2 hours,0,no,Gabriel Pereira,urban
 yes,4,2,teacher,services,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
-yes,2,2,at_home,at_home,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
-no,2,1,other,other,greater than 3,apart,6-10 hours,0,no,Gabriel Pereira,urban
+yes,2,2,at_home,at_home,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
+no,2,1,other,other,greater than 3,apart,5-10 hours,0,no,Gabriel Pereira,urban
 no,3,3,other,other,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,urban
 yes,4,2,health,other,3 or fewer,together,2-5 hours,0,yes,Gabriel Pereira,urban
 yes,3,4,other,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,4,4,services,teacher,greater than 3,together,<2 hours,1,yes,Gabriel Pereira,urban
 no,2,2,other,other,3 or fewer,together,>10 hours,0,yes,Gabriel Pereira,urban
 yes,4,3,health,other,3 or fewer,together,<2 hours,0,no,Gabriel Pereira,urban
-no,3,2,other,other,greater than 3,together,6-10 hours,0,no,Gabriel Pereira,rural
+no,3,2,other,other,greater than 3,together,5-10 hours,0,no,Gabriel Pereira,rural
 no,1,1,other,other,greater than 3,together,<2 hours,1,yes,Mousinho da Silveira,rural
 yes,1,1,other,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,4,4,teacher,services,greater than 3,together,2-5 hours,1,yes,Gabriel Pereira,urban
@@ -155,24 +155,24 @@ no,2,3,other,services,greater than 3,together,2-5 hours,0,no,Mousinho da Silveir
 no,1,1,at_home,at_home,3 or fewer,together,<2 hours,0,no,Gabriel Pereira,urban
 yes,4,3,teacher,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 yes,3,2,services,other,3 or fewer,apart,2-5 hours,0,yes,Gabriel Pereira,urban
-no,4,4,other,other,3 or fewer,together,6-10 hours,0,no,Mousinho da Silveira,rural
-no,2,2,other,at_home,greater than 3,together,6-10 hours,0,no,Mousinho da Silveira,urban
+no,4,4,other,other,3 or fewer,together,5-10 hours,0,no,Mousinho da Silveira,rural
+no,2,2,other,at_home,greater than 3,together,5-10 hours,0,no,Mousinho da Silveira,urban
 no,4,4,teacher,teacher,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,2,2,at_home,other,3 or fewer,together,2-5 hours,0,yes,Gabriel Pereira,urban
-yes,4,4,services,services,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
+yes,4,4,services,services,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
 no,1,1,at_home,services,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,urban
-yes,3,3,other,other,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
+yes,3,3,other,other,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
 no,2,1,other,other,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,urban
 no,2,2,other,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 yes,4,2,teacher,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
-no,3,4,services,other,greater than 3,together,6-10 hours,0,no,Gabriel Pereira,urban
+no,3,4,services,other,greater than 3,together,5-10 hours,0,no,Gabriel Pereira,urban
 yes,4,4,health,health,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,urban
 yes,1,2,at_home,at_home,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,rural
 no,2,2,other,other,3 or fewer,together,2-5 hours,1,yes,Gabriel Pereira,urban
 no,1,2,other,other,greater than 3,together,<2 hours,0,no,Mousinho da Silveira,rural
 no,3,3,other,other,greater than 3,together,2-5 hours,1,yes,Gabriel Pereira,urban
 no,1,2,other,services,3 or fewer,together,2-5 hours,0,no,Gabriel Pereira,urban
-yes,3,1,services,at_home,greater than 3,apart,6-10 hours,1,no,Gabriel Pereira,rural
+yes,3,1,services,at_home,greater than 3,apart,5-10 hours,1,no,Gabriel Pereira,rural
 no,3,2,other,services,greater than 3,apart,2-5 hours,0,no,Gabriel Pereira,rural
 no,3,3,other,services,greater than 3,together,2-5 hours,1,no,Gabriel Pereira,rural
 no,2,1,health,services,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,rural
@@ -187,7 +187,7 @@ no,3,2,services,other,3 or fewer,apart,2-5 hours,0,no,Mousinho da Silveira,urban
 yes,4,2,health,services,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,urban
 no,1,1,at_home,other,3 or fewer,together,2-5 hours,1,no,Mousinho da Silveira,rural
 no,4,4,other,services,greater than 3,apart,>10 hours,0,yes,Gabriel Pereira,urban
-no,3,2,other,services,greater than 3,together,6-10 hours,0,no,Gabriel Pereira,urban
+no,3,2,other,services,greater than 3,together,5-10 hours,0,no,Gabriel Pereira,urban
 yes,4,4,teacher,services,greater than 3,together,<2 hours,1,yes,Gabriel Pereira,urban
 yes,1,3,at_home,other,greater than 3,together,2-5 hours,0,yes,Mousinho da Silveira,rural
 no,4,4,teacher,teacher,greater than 3,together,<2 hours,0,no,Gabriel Pereira,urban
@@ -205,11 +205,11 @@ no,4,4,health,other,3 or fewer,apart,2-5 hours,0,yes,Gabriel Pereira,urban
 no,1,1,other,other,greater than 3,together,<2 hours,3,no,Mousinho da Silveira,rural
 yes,4,4,health,health,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,2,1,other,other,greater than 3,together,<2 hours,3,yes,Gabriel Pereira,urban
-yes,4,4,teacher,services,3 or fewer,together,6-10 hours,0,no,Mousinho da Silveira,urban
+yes,4,4,teacher,services,3 or fewer,together,5-10 hours,0,no,Mousinho da Silveira,urban
 yes,3,3,teacher,other,3 or fewer,together,<2 hours,0,yes,Gabriel Pereira,rural
 no,3,3,other,services,greater than 3,together,<2 hours,0,no,Gabriel Pereira,urban
 yes,3,3,other,services,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
-yes,2,1,other,other,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
+yes,2,1,other,other,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
 no,3,1,services,services,3 or fewer,together,<2 hours,0,no,Mousinho da Silveira,urban
 no,4,3,teacher,other,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,urban
 yes,2,2,health,services,3 or fewer,together,2-5 hours,0,yes,Gabriel Pereira,rural
@@ -221,7 +221,7 @@ no,2,2,other,other,3 or fewer,together,2-5 hours,0,no,Gabriel Pereira,urban
 no,2,3,other,other,greater than 3,together,<2 hours,0,no,Gabriel Pereira,urban
 no,1,3,other,other,greater than 3,together,2-5 hours,1,yes,Gabriel Pereira,rural
 yes,1,1,other,other,3 or fewer,together,2-5 hours,0,yes,Gabriel Pereira,urban
-no,4,4,other,other,greater than 3,together,6-10 hours,0,no,Gabriel Pereira,urban
+no,4,4,other,other,greater than 3,together,5-10 hours,0,no,Gabriel Pereira,urban
 no,4,4,health,teacher,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,rural
 no,4,4,services,services,greater than 3,together,<2 hours,0,no,Gabriel Pereira,urban
 no,4,4,services,teacher,greater than 3,together,<2 hours,0,no,Gabriel Pereira,urban
@@ -233,52 +233,52 @@ no,3,3,services,services,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,
 no,3,2,other,other,greater than 3,together,2-5 hours,2,yes,Gabriel Pereira,rural
 no,1,2,other,services,greater than 3,together,2-5 hours,1,no,Gabriel Pereira,urban
 yes,2,2,other,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
-yes,1,1,services,teacher,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
-yes,2,1,services,services,greater than 3,together,6-10 hours,1,no,Gabriel Pereira,urban
+yes,1,1,services,teacher,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
+yes,2,1,services,services,greater than 3,together,5-10 hours,1,no,Gabriel Pereira,urban
 yes,3,3,services,health,3 or fewer,together,2-5 hours,1,yes,Gabriel Pereira,urban
-no,4,3,teacher,services,greater than 3,together,6-10 hours,0,no,Gabriel Pereira,rural
+no,4,3,teacher,services,greater than 3,together,5-10 hours,0,no,Gabriel Pereira,rural
 no,4,4,teacher,health,3 or fewer,apart,2-5 hours,0,yes,Gabriel Pereira,urban
 no,4,4,at_home,teacher,greater than 3,apart,2-5 hours,0,no,Gabriel Pereira,urban
 yes,4,3,services,services,greater than 3,apart,2-5 hours,0,yes,Gabriel Pereira,urban
 yes,4,1,services,other,3 or fewer,apart,<2 hours,0,no,Gabriel Pereira,urban
 no,1,3,at_home,services,greater than 3,together,<2 hours,0,no,Gabriel Pereira,urban
-no,1,1,at_home,health,greater than 3,together,6-10 hours,2,no,Gabriel Pereira,urban
+no,1,1,at_home,health,greater than 3,together,5-10 hours,2,no,Gabriel Pereira,urban
 yes,2,4,services,at_home,greater than 3,together,2-5 hours,1,yes,Gabriel Pereira,urban
 yes,3,3,other,services,greater than 3,together,2-5 hours,1,yes,Gabriel Pereira,urban
 yes,2,3,at_home,services,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,rural
 no,2,3,other,other,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,urban
-no,3,2,at_home,other,greater than 3,together,6-10 hours,0,no,Gabriel Pereira,urban
+no,3,2,at_home,other,greater than 3,together,5-10 hours,0,no,Gabriel Pereira,urban
 no,2,2,other,other,3 or fewer,together,2-5 hours,0,no,Gabriel Pereira,urban
 no,3,3,at_home,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,4,4,teacher,teacher,3 or fewer,apart,<2 hours,0,no,Gabriel Pereira,urban
 yes,3,3,services,other,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,urban
-no,4,4,other,teacher,greater than 3,apart,6-10 hours,0,yes,Gabriel Pereira,rural
+no,4,4,other,teacher,greater than 3,apart,5-10 hours,0,yes,Gabriel Pereira,rural
 no,3,2,teacher,services,3 or fewer,apart,<2 hours,1,no,Gabriel Pereira,urban
 yes,3,4,services,other,greater than 3,apart,2-5 hours,0,yes,Gabriel Pereira,urban
-yes,4,4,teacher,teacher,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
-yes,2,2,services,services,3 or fewer,together,6-10 hours,0,yes,Gabriel Pereira,rural
+yes,4,4,teacher,teacher,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
+yes,2,2,services,services,3 or fewer,together,5-10 hours,0,yes,Gabriel Pereira,rural
 no,2,2,services,other,greater than 3,together,<2 hours,2,yes,Gabriel Pereira,rural
-yes,4,2,health,other,greater than 3,together,6-10 hours,2,yes,Mousinho da Silveira,urban
+yes,4,2,health,other,greater than 3,together,5-10 hours,2,yes,Mousinho da Silveira,urban
 no,3,2,other,other,greater than 3,together,2-5 hours,0,no,Gabriel Pereira,urban
 no,4,4,services,other,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,urban
 no,3,4,services,other,3 or fewer,together,2-5 hours,0,no,Gabriel Pereira,urban
 yes,4,3,services,other,greater than 3,together,2-5 hours,0,yes,Mousinho da Silveira,rural
-yes,3,4,at_home,services,greater than 3,together,6-10 hours,1,yes,Gabriel Pereira,urban
+yes,3,4,at_home,services,greater than 3,together,5-10 hours,1,yes,Gabriel Pereira,urban
 no,4,2,teacher,other,3 or fewer,together,<2 hours,0,no,Gabriel Pereira,urban
 yes,3,2,other,other,3 or fewer,together,2-5 hours,0,no,Gabriel Pereira,urban
 no,3,1,other,other,3 or fewer,together,>10 hours,0,yes,Gabriel Pereira,rural
-yes,4,2,other,other,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
+yes,4,2,other,other,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban
 no,1,2,other,other,3 or fewer,together,<2 hours,0,no,Gabriel Pereira,rural
 yes,2,2,other,other,greater than 3,together,>10 hours,0,yes,Gabriel Pereira,urban
 no,4,3,teacher,at_home,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,rural
 yes,4,4,health,services,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,2,2,services,other,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,rural
 no,3,4,other,other,greater than 3,together,<2 hours,2,yes,Gabriel Pereira,urban
-no,2,3,services,other,greater than 3,together,6-10 hours,1,no,Mousinho da Silveira,rural
+no,2,3,services,other,greater than 3,together,5-10 hours,1,no,Mousinho da Silveira,rural
 yes,2,2,other,other,greater than 3,together,>10 hours,0,no,Gabriel Pereira,urban
 yes,2,3,at_home,other,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,urban
-no,4,3,teacher,services,3 or fewer,together,6-10 hours,0,yes,Gabriel Pereira,urban
-no,0,2,at_home,at_home,3 or fewer,together,6-10 hours,0,no,Gabriel Pereira,urban
+no,4,3,teacher,services,3 or fewer,together,5-10 hours,0,yes,Gabriel Pereira,urban
+no,0,2,at_home,at_home,3 or fewer,together,5-10 hours,0,no,Gabriel Pereira,urban
 yes,3,3,other,other,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urban
 no,2,1,at_home,other,3 or fewer,together,<2 hours,1,no,Gabriel Pereira,urban
 yes,4,4,services,services,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,urban
@@ -294,4 +294,4 @@ no,4,4,other,teacher,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,urb
 yes,2,2,services,services,greater than 3,together,>10 hours,0,yes,Gabriel Pereira,rural
 no,3,4,at_home,teacher,greater than 3,together,2-5 hours,0,yes,Gabriel Pereira,rural
 no,4,4,teacher,teacher,greater than 3,together,<2 hours,0,yes,Gabriel Pereira,urban
-no,3,1,services,services,greater than 3,together,6-10 hours,0,yes,Gabriel Pereira,urban
+no,3,1,services,services,greater than 3,together,5-10 hours,0,yes,Gabriel Pereira,urban

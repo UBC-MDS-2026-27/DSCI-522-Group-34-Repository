@@ -1,0 +1,3352 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Vikasini Senthilkumar, Shorya Jain, Chengyan(Yan) Zhao, Arunark Singh">
+
+<title>Predicting Extra Paid Mathematics Classes from Student Background</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="predicting-paid-math-classes_files/libs/clipboard/clipboard.min.js"></script>
+<script src="predicting-paid-math-classes_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="predicting-paid-math-classes_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="predicting-paid-math-classes_files/libs/quarto-html/popper.min.js"></script>
+<script src="predicting-paid-math-classes_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="predicting-paid-math-classes_files/libs/quarto-html/anchor.min.js"></script>
+<link href="predicting-paid-math-classes_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="predicting-paid-math-classes_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="predicting-paid-math-classes_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="predicting-paid-math-classes_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="predicting-paid-math-classes_files/libs/bootstrap/bootstrap-215b371544c282197b31c8aa00ce3677.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#analysis" id="toc-analysis" class="nav-link" data-scroll-target="#analysis">Analysis</a></li>
+  <li><a href="#classification-model" id="toc-classification-model" class="nav-link" data-scroll-target="#classification-model">Classification Model</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">Exploratory Data Analysis</a></li>
+  <li><a href="#held-out-test-results" id="toc-held-out-test-results" class="nav-link" data-scroll-target="#held-out-test-results">Held-out test results</a></li>
+  </ul></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Predicting Extra Paid Mathematics Classes from Student Background</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Vikasini Senthilkumar, Shorya Jain, Chengyan(Yan) Zhao, Arunark Singh </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>We looked at whether students’ family backgrounds and study habits could help predict who attended paid mathematics classes. Using data from 395 students at two Portuguese schools, we compared three models. Logistic regression performed best during cross-validation, with an average accuracy of 64.2%. On the test data, its accuracy was 58.6%, slightly higher than the 54.5% accuracy of always predicting the most common outcome. This suggests the information in our dataset offers some help with prediction, but the results are modest. The data covers only two schools, and the model doesn’t include every possible reason a student might attend tutoring. It also shows patterns in the data, not that a student’s background or study habits cause them to take paid classes.</p>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Private tutoring provides students with additional academic instruction outside regular school lessons. This includes help with coursework and examination preparation. In their study of tutoring agencies in Ontario, Aurini and Davies (2004) describe how private tutoring expanded from informal assistance into organized learning centres that offer a broader range of educational services. This suggests that paid tuition is becoming a trend. However, we believe that participation in paid tutoring may reflect more than academic difficulty. Using German household survey data, Hille, Spieß, and Staneva (2016) document differences in tutoring participation across income groups. They highlighted the importance of considering family resources when studying access to supplementary education. In Portugal, Fonseca (1996) examines how family resources and competition for educational qualifications shape educational opportunities and strategies. Although this research concerns higher education rather than mathematics tutoring specifically, it still provides historical context for examining family background in educational participation. More directly, Qu (2025) analyzes mathematics achievement among students in two Portuguese secondary schools. This research considered family, individual, and school-related characteristics, including paid tutoring. Building on these perspectives, our study aim to understand which student characteristics help distinguish participants from non-participants. This may inform further research into access to supplementary learning opportunities. We ask: Can students’ family backgrounds and study-related characteristics predict whether they attend paid tutoring in mathematics? To answer this question, we use the mathematics subset of the Student Performance dataset from the UCI Machine Learning Repository (Cortez 2008). It contains 395 student records from two Portuguese secondary schools, collected through school reports and questionnaires. Where each row represents one student’s record for the mathematics course. Our predictors include parental education and occupations, family size, parents’ cohabitation status, guardian, weekly study time, previous class failures, and family and school educational support. The response variable is paid mathematics tutoring participation, recorded as “yes” or “no”. Which makes this a binary classification problem. We exclude first-period, second-period, and final grades because these may already reflect tutoring participation. Our analysis evaluates predictive relationships within this sample. It does not establish why students attend tutoring or whether tutoring improves their grades.</p>
+</section>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">Methods</h2>
+<section id="data" class="level3">
+<h3 class="anchored" data-anchor-id="data">Data</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://archive.ics.uci.edu/static/public/320/student+performance.zip"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(url,<span class="st">"../data/raw/student_performance.zip"</span>, <span class="at">mode =</span> <span class="st">"wb"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"../data/raw/student_performance.zip"</span>, <span class="at">exdir =</span> <span class="st">"../data/raw"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"../data/raw/student.zip"</span>, <span class="at">exdir =</span> <span class="st">"../data/raw"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>student_math <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">"../data/raw/student-mat.csv"</span>, <span class="at">delim =</span> <span class="st">";"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 395 Columns: 33
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ";"
+chr (17): school, sex, address, famsize, Pstatus, Mjob, Fjob, reason, guardi...
+dbl (16): age, Medu, Fedu, traveltime, studytime, failures, famrel, freetime...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">"../data/raw/student_performance.zip"</span>, <span class="st">"../data/raw/student.zip"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE TRUE</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>student_math_clean <span class="ot">&lt;-</span> student_math <span class="sc">|&gt;</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(paid, Medu, Fedu, Mjob, Fjob, famsize, Pstatus, studytime, </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>         failures, famsup, school, address) <span class="sc">|&gt;</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">paid_classes =</span> paid,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">mother_edu =</span> Medu,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">father_edu =</span> Fedu,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">mother_job =</span> Mjob,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">father_job =</span> Fjob,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">family_size =</span> famsize, </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">parent_status =</span> Pstatus, </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">past_failures =</span> failures,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">family_support =</span> famsup</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>         ) <span class="sc">|&gt;</span> </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">address =</span> <span class="fu">case_when</span>(address <span class="sc">==</span> <span class="st">"U"</span> <span class="sc">~</span> <span class="st">"urban"</span>, </span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                             address <span class="sc">==</span> <span class="st">"R"</span> <span class="sc">~</span> <span class="st">"rural"</span>),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">parent_status =</span> <span class="fu">case_when</span>(parent_status <span class="sc">==</span> <span class="st">"T"</span> <span class="sc">~</span> <span class="st">"together"</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                                   parent_status <span class="sc">==</span> <span class="st">"A"</span> <span class="sc">~</span> <span class="st">"apart"</span>),</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">family_size =</span> <span class="fu">case_when</span>(family_size <span class="sc">==</span> <span class="st">"LE3"</span> <span class="sc">~</span> <span class="st">"3 or fewer"</span>, </span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                                 family_size <span class="sc">==</span> <span class="st">"GT3"</span> <span class="sc">~</span> <span class="st">"greater than 3"</span>),</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">school =</span> <span class="fu">case_when</span>(school <span class="sc">==</span> <span class="st">"GP"</span> <span class="sc">~</span> <span class="st">"Gabriel Pereira"</span>,</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>                            school <span class="sc">==</span> <span class="st">"MS"</span> <span class="sc">~</span> <span class="st">"Mousinho da Silveira"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.character), as.factor)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">studytime =</span> <span class="fu">factor</span>(studytime, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>                            <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"&lt;2 hours"</span>, <span class="st">"2-5 hours"</span>, </span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">"5-10 hours"</span>, <span class="st">"&gt;10 hours"</span>)),</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>         <span class="at">paid_classes =</span> <span class="fu">factor</span>(paid_classes, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"yes"</span>, <span class="st">"no"</span>)))</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(student_math_clean, <span class="st">"../data/processed/student_math_clean.csv"</span>)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(student_math_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 12
+  paid_classes mother_edu father_edu mother_job father_job family_size   
+  &lt;fct&gt;             &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;      &lt;fct&gt;      &lt;fct&gt;         
+1 no                    4          4 at_home    teacher    greater than 3
+2 no                    1          1 at_home    other      greater than 3
+3 yes                   1          1 at_home    other      3 or fewer    
+4 yes                   4          2 health     services   greater than 3
+5 yes                   3          3 other      other      greater than 3
+6 yes                   4          3 services   other      3 or fewer    
+# ℹ 6 more variables: parent_status &lt;fct&gt;, studytime &lt;fct&gt;,
+#   past_failures &lt;dbl&gt;, family_support &lt;fct&gt;, school &lt;fct&gt;, address &lt;fct&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="analysis" class="level3">
+<h3 class="anchored" data-anchor-id="analysis">Analysis</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>math_student <span class="op">=</span> pd.read_csv(<span class="st">"../data/processed/student_math_clean.csv"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Splitting the data into 75% training and 25% test</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(math_student, test_size <span class="op">=</span> <span class="fl">0.25</span>, stratify<span class="op">=</span>math_student[<span class="st">"paid_classes"</span>], random_state <span class="op">=</span> <span class="dv">522</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>train_df.to_csv(<span class="st">"../data/processed/student_math_train.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>test_df.to_csv(<span class="st">"../data/processed/student_math_test.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train_df.shape, test_df.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(296, 12) (99, 12)</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train_df[<span class="st">"paid_classes"</span>].value_counts())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>paid_classes
+no     160
+yes    136
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+</section>
+<section id="classification-model" class="level3">
+<h3 class="anchored" data-anchor-id="classification-model">Classification Model</h3>
+<p>We compare three classifiers using five-fold stratified cross-validation on the training data. The model with the highest mean validation accuracy is selected. We then fit that model on the full training set and report its performance once on the held-out test set. The test set is not used to choose a model.</p>
+<p>We use logistic regression as a simple linear baseline, a shallow decision tree for an interpretable rule-based model, and a small random forest to check whether combining trees improves prediction. The categorical predictors are one-hot encoded, and numeric predictors are standardized within each training fold. The same preprocessing is applied consistently to all three models.</p>
+<section id="cross-validation-model-comparison" class="level4">
+<h4 class="anchored" data-anchor-id="cross-validation-model-comparison">Cross-validation model comparison</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> altair <span class="im">as</span> alt</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, StandardScaler</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> StratifiedKFold, cross_val_score</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score, precision_score, recall_score, f1_score, confusion_matrix</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co"># These are the selected predictors; the response is paid_classes.</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>categorical_columns <span class="op">=</span> [</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"mother_job"</span>, <span class="st">"father_job"</span>, <span class="st">"family_size"</span>, <span class="st">"parent_status"</span>,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"studytime"</span>, <span class="st">"family_support"</span>, <span class="st">"school"</span>, <span class="st">"address"</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>numeric_columns <span class="op">=</span> [<span class="st">"mother_edu"</span>, <span class="st">"father_edu"</span>, <span class="st">"past_failures"</span>]</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>predictor_columns <span class="op">=</span> categorical_columns <span class="op">+</span> numeric_columns</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> train_df[predictor_columns]</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> train_df[<span class="st">"paid_classes"</span>].astype(<span class="bu">str</span>)</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> test_df[predictor_columns]</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> test_df[<span class="st">"paid_classes"</span>].astype(<span class="bu">str</span>)</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> ColumnTransformer(</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>    transformers<span class="op">=</span>[</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"numeric"</span>, StandardScaler(), numeric_columns),</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"categorical"</span>, OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>), categorical_columns),</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>model_choices <span class="op">=</span> {</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Logistic regression"</span>: LogisticRegression(max_iter<span class="op">=</span><span class="dv">1000</span>, random_state<span class="op">=</span><span class="dv">522</span>),</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Decision tree (depth 4)"</span>: DecisionTreeClassifier(max_depth<span class="op">=</span><span class="dv">4</span>, random_state<span class="op">=</span><span class="dv">522</span>),</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Random forest"</span>: RandomForestClassifier(</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>        n_estimators<span class="op">=</span><span class="dv">100</span>, max_depth<span class="op">=</span><span class="dv">5</span>, random_state<span class="op">=</span><span class="dv">522</span>, n_jobs<span class="op">=-</span><span class="dv">1</span></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>cv <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">522</span>)</span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>model_pipelines <span class="op">=</span> {}</span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>cv_rows <span class="op">=</span> []</span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> model_name, classifier <span class="kw">in</span> model_choices.items():</span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>    pipeline <span class="op">=</span> Pipeline([</span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"preprocess"</span>, preprocessor),</span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"classifier"</span>, classifier),</span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cross_val_score(</span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>        pipeline, X_train, y_train, cv<span class="op">=</span>cv, scoring<span class="op">=</span><span class="st">"accuracy"</span></span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>    model_pipelines[model_name] <span class="op">=</span> pipeline</span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a>    cv_rows.append({</span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Model"</span>: model_name,</span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Mean validation accuracy"</span>: scores.mean(),</span>
+<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>        <span class="st">"SD across folds"</span>: scores.std(),</span>
+<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a>cv_results <span class="op">=</span> pd.DataFrame(cv_rows).sort_values(</span>
+<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Mean validation accuracy"</span>, ascending<span class="op">=</span><span class="va">False</span></span>
+<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Table 1. Five-fold cross-validation accuracy on training data."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Table 1. Five-fold cross-validation accuracy on training data.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>cv_results.style.<span class="bu">format</span>({</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Mean validation accuracy"</span>: <span class="st">"</span><span class="sc">{:.3f}</span><span class="st">"</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"SD across folds"</span>: <span class="st">"</span><span class="sc">{:.3f}</span><span class="st">"</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<style type="text/css">
+</style>
+
+<table id="T_a48c7" class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_a48c7_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Model</th>
+<th id="T_a48c7_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Mean validation accuracy</th>
+<th id="T_a48c7_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">SD across folds</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th id="T_a48c7_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">0</th>
+<td id="T_a48c7_row0_col0" class="data row0 col0">Logistic regression</td>
+<td id="T_a48c7_row0_col1" class="data row0 col1">0.642</td>
+<td id="T_a48c7_row0_col2" class="data row0 col2">0.024</td>
+</tr>
+<tr class="even">
+<th id="T_a48c7_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">1</th>
+<td id="T_a48c7_row1_col0" class="data row1 col0">Decision tree (depth 4)</td>
+<td id="T_a48c7_row1_col1" class="data row1 col1">0.635</td>
+<td id="T_a48c7_row1_col2" class="data row1 col2">0.015</td>
+</tr>
+<tr class="odd">
+<th id="T_a48c7_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">2</th>
+<td id="T_a48c7_row2_col0" class="data row2 col0">Random forest</td>
+<td id="T_a48c7_row2_col1" class="data row2 col1">0.622</td>
+<td id="T_a48c7_row2_col2" class="data row2 col2">0.023</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cv_chart <span class="op">=</span> alt.Chart(cv_results).mark_bar().encode(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>alt.X(<span class="st">"Model:N"</span>, sort<span class="op">=</span><span class="st">"-y"</span>, title<span class="op">=</span><span class="st">"Model"</span>),</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>alt.Y(</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Mean validation accuracy:Q"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        scale<span class="op">=</span>alt.Scale(domain<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>]),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Mean validation accuracy"</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    tooltip<span class="op">=</span>[</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        alt.Tooltip(<span class="st">"Model:N"</span>),</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        alt.Tooltip(<span class="st">"Mean validation accuracy:Q"</span>, <span class="bu">format</span><span class="op">=</span><span class="st">".3f"</span>),</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        alt.Tooltip(<span class="st">"SD across folds:Q"</span>, <span class="bu">format</span><span class="op">=</span><span class="st">".3f"</span>),</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>).properties(width<span class="op">=</span><span class="dv">450</span>, height<span class="op">=</span><span class="dv">280</span>, title<span class="op">=</span><span class="st">"Model accuracy across five validation folds"</span>)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>cv_chart</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+
+
+
+  <meta charset="UTF-8">
+  <style>
+    #unnamed-chunk-7-altair-viz.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #unnamed-chunk-7-altair-viz.vega-embed details,
+    #unnamed-chunk-7-altair-viz.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.1"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+
+
+  <div id="unnamed-chunk-7-altair-viz"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}}, "data": {"name": "data-4abafce6c8521a337a2145da6ee9a497"}, "mark": {"type": "bar"}, "encoding": {"tooltip": [{"field": "Model", "type": "nominal"}, {"field": "Mean validation accuracy", "format": ".3f", "type": "quantitative"}, {"field": "SD across folds", "format": ".3f", "type": "quantitative"}], "x": {"field": "Model", "sort": "-y", "title": "Model", "type": "nominal"}, "y": {"field": "Mean validation accuracy", "scale": {"domain": [0, 1]}, "title": "Mean validation accuracy", "type": "quantitative"}}, "height": 280, "title": "Model accuracy across five validation folds", "width": 450, "$schema": "https://vega.github.io/schema/vega-lite/v6.4.1.json", "datasets": {"data-4abafce6c8521a337a2145da6ee9a497": [{"Model": "Logistic regression", "Mean validation accuracy": 0.6419209039548023, "SD across folds": 0.024351265595527652}, {"Model": "Decision tree (depth 4)", "Mean validation accuracy": 0.6350847457627119, "SD across folds": 0.014615634669362759}, {"Model": "Random forest", "Mean validation accuracy": 0.621638418079096, "SD across folds": 0.02255900438538551}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('unnamed-chunk-7-altair-viz');
+      vegaEmbed("#unnamed-chunk-7-altair-viz", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+
+
+</div>
+</div>
+<p><strong>Figure 1.</strong> Mean five-fold validation accuracy for each candidate model.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>best_model_name <span class="op">=</span> cv_results.loc[<span class="dv">0</span>, <span class="st">"Model"</span>]</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>best_model <span class="op">=</span> model_pipelines[best_model_name]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Selected model: </span><span class="sc">{</span>best_model_name<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Selected model: Logistic regression</code></pre>
+</div>
+</div>
+<p>Logistic regression was selected because it had the highest mean validation accuracy across the five folds. We then used it to evaluate performance on the held-out test set.</p>
+</section>
+</section>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<section id="exploratory-data-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h3>
+<p>We used the training set to summarize the participation in paid mathematics classes. We want to examine whether participation varied by weekly study time. Table 1 reports the number and percentage of students in each participation group. Of the 296 students, 136 (45.9%) attended paid classes and 160 (54.1%) did not. Therefore the two groups are fairly balanced, with slightly more students in the non-participation group.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>paid_summary <span class="op">=</span> (</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>       train_df[<span class="st">"paid_classes"</span>]</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>       .value_counts(dropna<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>       .rename_axis(<span class="st">"Attended paid classes"</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>       .reset_index(name<span class="op">=</span><span class="st">"Students"</span>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>paid_summary[<span class="st">"Percent"</span>] <span class="op">=</span> (</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>       <span class="dv">100</span> <span class="op">*</span> paid_summary[<span class="st">"Students"</span>] <span class="op">/</span> <span class="bu">len</span>(train_df)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>).<span class="bu">round</span>(<span class="dv">1</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(paid_summary.to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Attended paid classes  Students  Percent
+                   no       160     54.1
+                  yes       136     45.9</code></pre>
+</div>
+</div>
+<p>The dataset records weekly study time in four categories: less than 2 hours, 2-5 hours, 5-10 hours and more than 10 hours. Figure 2 shows the percentage of students attending paid classes within each study-time group, using only the training set. Participation in paid mathematics classes was higher among students who reported more weekly study time. About 33% of students who studied less than 2 hours per week attended paid classes, and compare with about 62% of those who studied more than 10 hours per week. (Figure 2).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> altair <span class="im">as</span> alt</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>study_order <span class="op">=</span> [<span class="st">"&lt;2 hours"</span>, <span class="st">"2-5 hours"</span>, <span class="st">"5-10 hours"</span>, <span class="st">"&gt;10 hours"</span>]</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the proportion of students who attended paid classes in each study-time group.</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>study_summary <span class="op">=</span> (</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>       train_df.dropna(subset<span class="op">=</span>[<span class="st">"studytime"</span>, <span class="st">"paid_classes"</span>])</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>       .assign(attend<span class="op">=</span><span class="kw">lambda</span> df: df[<span class="st">"paid_classes"</span>].eq(<span class="st">"yes"</span>))</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>       .groupby(<span class="st">"studytime"</span>, as_index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>       .agg(participation_rate<span class="op">=</span>(<span class="st">"attend"</span>, <span class="st">"mean"</span>))</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot each group's participation rate as a percentage, ordered by weekly study time.</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>alt.Chart(study_summary).mark_bar().encode(</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>       y<span class="op">=</span>alt.Y(</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>              <span class="st">"studytime:N"</span>,</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>              title<span class="op">=</span><span class="st">"Weekly study time"</span>,</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>              sort<span class="op">=</span>[<span class="st">"&lt;2 hours"</span>, <span class="st">"2-5 hours"</span>, <span class="st">"5-10 hours"</span>, <span class="st">"&gt;10 hours"</span>]</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>       ),</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>       x<span class="op">=</span>alt.X(</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>              <span class="st">"participation_rate:Q"</span>,</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>              title<span class="op">=</span><span class="st">"Percentage attending paid mathematics classes"</span>,</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>              axis<span class="op">=</span>alt.Axis(<span class="bu">format</span><span class="op">=</span><span class="st">".0%"</span>),</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>              scale<span class="op">=</span>alt.Scale(domain<span class="op">=</span>[<span class="dv">0</span>,<span class="dv">1</span>]),</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>       ),</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>).properties(width<span class="op">=</span><span class="dv">500</span>, height<span class="op">=</span><span class="dv">180</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+
+
+
+  <meta charset="UTF-8">
+  <style>
+    #unnamed-chunk-10-altair-viz.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #unnamed-chunk-10-altair-viz.vega-embed details,
+    #unnamed-chunk-10-altair-viz.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.1"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+
+
+  <div id="unnamed-chunk-10-altair-viz"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}}, "data": {"name": "data-dafc8de8a3c87de78c7717b086cd64c0"}, "mark": {"type": "bar"}, "encoding": {"x": {"axis": {"format": ".0%"}, "field": "participation_rate", "scale": {"domain": [0, 1]}, "title": "Percentage attending paid mathematics classes", "type": "quantitative"}, "y": {"field": "studytime", "sort": ["<2 hours", "2-5 hours", "5-10 hours", ">10 hours"], "title": "Weekly study time", "type": "nominal"}}, "height": 180, "width": 500, "$schema": "https://vega.github.io/schema/vega-lite/v6.4.1.json", "datasets": {"data-dafc8de8a3c87de78c7717b086cd64c0": [{"studytime": "2-5 hours", "participation_rate": 0.47586206896551725}, {"studytime": "5-10 hours", "participation_rate": 0.574468085106383}, {"studytime": "<2 hours", "participation_rate": 0.3253012048192771}, {"studytime": ">10 hours", "participation_rate": 0.6190476190476191}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('unnamed-chunk-10-altair-viz');
+      vegaEmbed("#unnamed-chunk-10-altair-viz", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+
+
+</div>
+</div>
+<p><strong>Figure 2.</strong> Percentage of students attending paid mathematics classes within each weekly study-time group in the training set.</p>
+</section>
+<section id="held-out-test-results" class="level3">
+<h3 class="anchored" data-anchor-id="held-out-test-results">Held-out test results</h3>
+<p>The selected model is refit using all training observations, then evaluated on the test observations that were set aside before cross-validation. We report accuracy and the precision, recall, and F1 score for students who attended paid mathematics classes. The majority-class baseline always predicts the most common outcome in the training data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>best_model.fit(X_train, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<style>.sk-global {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: #000;
+  --sklearn-color-text-muted: #666;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+}
+
+.sk-global.light {
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: black;
+  --sklearn-color-background: white;
+  --sklearn-color-border-box: black;
+  --sklearn-color-icon: #696969;
+}
+
+.sk-global.dark {
+  --sklearn-color-text-on-default-background: white;
+  --sklearn-color-background: #111;
+  --sklearn-color-border-box: white;
+  --sklearn-color-icon: #878787;
+}
+
+.sk-global {
+  color: var(--sklearn-color-text);
+}
+
+.sk-global pre {
+  padding: 0;
+}
+
+.sk-global input.sk-hidden--visually {
+  border: 0;
+  clip-path: inset(100%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.sk-global div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+.sk-global div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+.sk-global div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+.sk-global div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+.sk-global div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+.sk-global div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.sk-global div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+.sk-global div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+.sk-global div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+.sk-global div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+.sk-global div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+.sk-global label.sk-toggleable__label {
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+.sk-global label.sk-toggleable__label .caption {
+  font-size: 0.6rem;
+  font-weight: lighter;
+  color: var(--sklearn-color-text-muted);
+}
+
+.sk-global label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+.sk-global label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+.sk-global div.sk-toggleable__content {
+  display: none;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+.sk-global div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+.sk-global div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+.sk-global div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+.sk-global input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.sk-global input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+.sk-global div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+.sk-global div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+.sk-global div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+.sk-global div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+.sk-global div.sk-label label.sk-toggleable__label,
+.sk-global div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+.sk-global div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+.sk-global div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+.sk-global div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  line-height: 1.2em;
+}
+
+.sk-global div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+.sk-global div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+.sk-global div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+.sk-global div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+.sk-global div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 0.5em;
+  text-align: center;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-3) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3) 1pt solid;
+  color: var(--sklearn-color-fitted-level-3);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  border: var(--sklearn-color-fitted-level-0) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-0);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  border: var(--sklearn-color-fitted-level-0) 1pt solid;
+  color: var(--sklearn-color-fitted-level-0);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+.sk-global a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+.sk-global a.estimator_doc_link.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+.sk-global a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+.sk-global a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-top-container.sk-global {
+  /* pydata-sphinx-theme hides overflow, so scrolling is disabled.
+   We need to set it to !important and add tabindex="0" in the HTML
+   to allow keyboard-only users to navigate the display. */
+  overflow-x: scroll !important;
+  max-width: 100%;
+}
+
+.estimator-table {
+    font-family: monospace;
+}
+
+.estimator-table summary {
+    padding: .5rem;
+    cursor: pointer;
+}
+
+.estimator-table summary::marker {
+    font-size: 0.7rem;
+}
+
+.estimator-table details[open] {
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    padding-bottom: 0.3rem;
+}
+
+.estimator-table .parameters-table {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-top: 0;
+}
+
+.estimator-table .parameters-table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.estimator-table .parameters-table tr:nth-child(even) {
+    background-color: #f6f6f6;
+}
+
+.estimator-table .parameters-table tr:hover td {
+    background-color: #e0e0e0;
+}
+
+.estimator-table table :is(td, th) {
+    border: 1px solid rgba(106, 105, 104, 0.232);
+}
+
+/*
+    `table td`is set in notebook with right text-align.
+    We need to overwrite it.
+*/
+.estimator-table table td.param {
+    text-align: left;
+    position: relative;
+    padding: 0;
+}
+
+.user-set td {
+    color:rgb(255, 94, 0);
+    text-align: left !important;
+}
+
+.user-set td.value {
+    color:rgb(255, 94, 0);
+    background-color: transparent;
+}
+
+.default td, .estimator-table th {
+    color: black;
+    text-align: left !important;
+}
+
+.user-set td i,
+.default td i {
+    color: black;
+}
+
+td.fitted-att-type {
+    white-space: preserve nowrap;
+}
+
+/*
+    Styles for parameter documentation links
+    We need styling for visited so jupyter doesn't overwrite it
+*/
+a.param-doc-link,
+a.param-doc-link:link,
+a.param-doc-link:visited {
+    text-decoration: underline dashed;
+    text-underline-offset: .3em;
+    color: inherit;
+    display: block;
+    padding: .5em;
+}
+
+@supports(anchor-name: --doc-link) {
+    a.param-doc-link,
+    a.param-doc-link:link,
+    a.param-doc-link:visited {
+    anchor-name: --doc-link;
+    }
+}
+
+/* "hack" to make the entire area of the cell containing the link clickable */
+a.param-doc-link::before {
+    position: absolute;
+    content: "";
+    inset: 0;
+}
+
+.param-doc-description {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    left: 0;
+    padding: .5ex;
+    margin-left: 1.5em;
+    color: var(--sklearn-color-text);
+    box-shadow: .3em .3em .4em #999;
+    width: max-content;
+    text-align: left;
+    max-height: 10em;
+    overflow-y: auto;
+
+    /* unfitted */
+    background: var(--sklearn-color-unfitted-level-0);
+    border: thin solid var(--sklearn-color-unfitted-level-3);
+}
+
+@supports(position-area: center right) {
+    .param-doc-description {
+    position-area: center right;
+    position: fixed;
+    margin-left: 0;
+    }
+}
+
+/* Fitted state for parameter tooltips */
+.fitted .param-doc-description {
+    /* fitted */
+    background: var(--sklearn-color-fitted-level-0);
+    border: thin solid var(--sklearn-color-fitted-level-3);
+}
+
+.param-doc-link:hover .param-doc-description {
+    display: block;
+}
+
+.copy-paste-icon {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIUZvbnQgQXdlc29tZSBGcmVlIDYuNy4yIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlL2ZyZWUgQ29weXJpZ2h0IDIwMjUgRm9udGljb25zLCBJbmMuLS0+PHBhdGggZD0iTTIwOCAwTDMzMi4xIDBjMTIuNyAwIDI0LjkgNS4xIDMzLjkgMTQuMWw2Ny45IDY3LjljOSA5IDE0LjEgMjEuMiAxNC4xIDMzLjlMNDQ4IDMzNmMwIDI2LjUtMjEuNSA0OC00OCA0OGwtMTkyIDBjLTI2LjUgMC00OC0yMS41LTQ4LTQ4bDAtMjg4YzAtMjYuNSAyMS41LTQ4IDQ4LTQ4ek00OCAxMjhsODAgMCAwIDY0LTY0IDAgMCAyNTYgMTkyIDAgMC0zMiA2NCAwIDAgNDhjMCAyNi41LTIxLjUgNDgtNDggNDhMNDggNTEyYy0yNi41IDAtNDgtMjEuNS00OC00OEwwIDE3NmMwLTI2LjUgMjEuNS00OCA0OC00OHoiLz48L3N2Zz4=);
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+    background-position: 0;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+}
+
+.copy-paste-icon:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 1px;
+}
+
+.features {
+  font-family: monospace;
+  cursor: pointer;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: .20em;
+  margin-bottom: 0.5em;
+  font-size: inherit; /* Needed for jupyter */
+}
+
+.features.fitted {
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+.features summary {
+  cursor: pointer;
+  display: flex;
+  margin-bottom: 0;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding: .25em;
+}
+
+.features details[open] > summary {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+  border-radius: .20em 0 0 0;
+}
+
+.features.fitted details[open] > summary {
+  background-color: var(--sklearn-color-fitted-level-2);
+  border-radius: .20em 0 0 0;
+}
+
+.features details > summary .arrow::before {
+  content: "▸";
+  color: grey;
+}
+
+.features details[open] > summary .arrow::before {
+  content: "▾";
+}
+
+.features details:hover > summary {
+  margin: 0;
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+.features.fitted details:hover > summary {
+  margin: 0;
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+.features .features-container {
+  max-height: 10em;
+  overflow: auto;
+  scrollbar-width: thin;
+  padding: .25em 0.1rem;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 0 0 .5em .5em;
+}
+
+.features.fitted .features-container {
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+.features .image-container {
+  block-size: 1em;
+  inline-size: 1em;
+  padding: 0;
+  margin: 0%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.features .copy-paste-icon {
+  background-size: 1em 1em;
+  width: 1em;
+  height: 1em;
+  filter: grayscale(100%) opacity(60%);
+}
+
+.features .features-container table {
+  width: 100%;
+  margin: 0.01em;
+}
+
+.features .features-container table tr:nth-child(odd) {
+  background-color: #fff;
+}
+
+.features .features-container table tr:nth-child(even) {
+  background-color: #f6f6f6;
+}
+
+.features .features-container table tr:hover {
+  background-color: #e0e0e0;
+}
+
+.features .features-container table {
+  table-layout: inherit;
+}
+
+.features .features-container table td {
+  text-align: left;
+  padding: 0 0.5em;
+  border: 1px solid rgba(106, 105, 104, 0.232);
+  white-space: nowrap;
+  color: var(--sklearn-color-text);
+}
+
+.total_features {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5em;
+}
+</style><div id="sk-container-id-1" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>Pipeline(steps=[('preprocess',
+                 ColumnTransformer(transformers=[('numeric', StandardScaler(),
+                                                  ['mother_edu', 'father_edu',
+                                                   'past_failures']),
+                                                 ('categorical',
+                                                  OneHotEncoder(handle_unknown='ignore'),
+                                                  ['mother_job', 'father_job',
+                                                   'family_size',
+                                                   'parent_status', 'studytime',
+                                                   'family_support', 'school',
+                                                   'address'])])),
+                ('classifier',
+                 LogisticRegression(max_iter=1000, random_state=522))])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-1" type="checkbox"><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Pipeline</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.9/modules/generated/sklearn.pipeline.Pipeline.html">?<span>Documentation for Pipeline</span></a><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="user-set odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy steps to clipboard" onclick="copyToClipboard('steps',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.pipeline.Pipeline.html#:~:text=steps,-list%20of%20tuples" class="param-doc-link" style="anchor-name: --doc-link-steps;" rel="noreferrer" target="_blank">steps <span class="param-doc-description" style="position-anchor: --doc-link-steps;"> steps: list of tuples<br>
+<br>
+List of (name of step, estimator) tuples that are to be chained in<br>
+sequential order. To be compatible with the scikit-learn API, all steps<br>
+must define `fit`. All non-last steps must also define `transform`. See<br>
+:ref:`Combining Estimators &lt;combining_estimators&gt;` for more details.</span></a></td>
+<td class="value">[('preprocess', ...), ('classifier', ...)]</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy transform_input to clipboard" onclick="copyToClipboard('transform_input',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.pipeline.Pipeline.html#:~:text=transform_input,-list%20of%20str%2C%20default%3DNone" class="param-doc-link" style="anchor-name: --doc-link-transform_input;" rel="noreferrer" target="_blank">transform_input <span class="param-doc-description" style="position-anchor: --doc-link-transform_input;"> transform_input: list of str, default=None<br>
+<br>
+The names of the :term:`metadata` parameters that should be transformed by the<br>
+pipeline before passing it to the step consuming it.<br>
+<br>
+This enables transforming some input arguments to ``fit`` (other than ``X``)<br>
+to be transformed by the steps of the pipeline up to the step which requires<br>
+them. Requirement is defined via :ref:`metadata routing &lt;metadata_routing&gt;`.<br>
+For instance, this can be used to pass a validation set through the pipeline.<br>
+<br>
+You can only set this if metadata routing is enabled, which you<br>
+can enable using ``sklearn.set_config(enable_metadata_routing=True)``.<br>
+<br>
+.. versionadded:: 1.6</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy memory to clipboard" onclick="copyToClipboard('memory',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.pipeline.Pipeline.html#:~:text=memory,-str%20or%20object%20with%20the%20joblib.Memory%20interface%2C%20default%3DNone" class="param-doc-link" style="anchor-name: --doc-link-memory;" rel="noreferrer" target="_blank">memory <span class="param-doc-description" style="position-anchor: --doc-link-memory;"> memory: str or object with the joblib.Memory interface, default=None<br>
+<br>
+Used to cache the fitted transformers of the pipeline. The last step<br>
+will never be cached, even if it is a transformer. By default, no<br>
+caching is performed. If a string is given, it is the path to the<br>
+caching directory. Enabling caching triggers a clone of the transformers<br>
+before fitting. Therefore, the transformer instance given to the<br>
+pipeline cannot be inspected directly. Use the attribute ``named_steps``<br>
+or ``steps`` to inspect estimators within the pipeline. Caching the<br>
+transformers is advantageous when fitting is time consuming. See<br>
+:ref:`sphx_glr_auto_examples_neighbors_plot_caching_nearest_neighbors.py`<br>
+for an example on how to enable caching.</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy verbose to clipboard" onclick="copyToClipboard('verbose',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.pipeline.Pipeline.html#:~:text=verbose,-bool%2C%20default%3DFalse" class="param-doc-link" style="anchor-name: --doc-link-verbose;" rel="noreferrer" target="_blank">verbose <span class="param-doc-description" style="position-anchor: --doc-link-verbose;"> verbose: bool, default=False<br>
+<br>
+If True, the time elapsed while fitting each step will be printed as it<br>
+is completed.</span></a></td>
+<td class="value">False</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    
+        <div class="estimator-table">
+            <details>
+                <summary>Fitted attributes</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Name</th>
+<th data-quarto-table-cell-role="th">Type</th>
+<th data-quarto-table-cell-role="th">Value</th>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.pipeline.Pipeline.html#:~:text=classes_,-ndarray%20of%20shape%20%28n_classes%2C%29" class="param-doc-link" style="anchor-name: --doc-link-classes_;" rel="noreferrer" target="_blank">classes_ <span class="param-doc-description" style="position-anchor: --doc-link-classes_;"> classes_: ndarray of shape (n_classes,)<br>
+<br>
+The classes labels. Only exist if the last step of the pipeline is a<br>
+classifier.</span></a></td>
+<td class="fitted-att-type">ndarray[object](2,)</td>
+<td>['no','yes']</td>
+</tr>
+<tr class="default odd">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.pipeline.Pipeline.html#:~:text=feature_names_in_,-ndarray%20of%20shape%20%28n_features_in_%2C%29" class="param-doc-link" style="anchor-name: --doc-link-feature_names_in_;" rel="noreferrer" target="_blank">feature_names_in_ <span class="param-doc-description" style="position-anchor: --doc-link-feature_names_in_;"> feature_names_in_: ndarray of shape (`n_features_in_`,)<br>
+<br>
+Names of features seen during :term:`fit`. Only defined if the<br>
+underlying estimator exposes such an attribute when fit.<br>
+<br>
+.. versionadded:: 1.0</span></a></td>
+<td class="fitted-att-type">ndarray[object](11,)</td>
+<td>['mother_job','father_job','family_size',...,'mother_edu','father_edu', 'past_failures']</td>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.pipeline.Pipeline.html#:~:text=n_features_in_,-int" class="param-doc-link" style="anchor-name: --doc-link-n_features_in_;" rel="noreferrer" target="_blank">n_features_in_ <span class="param-doc-description" style="position-anchor: --doc-link-n_features_in_;"> n_features_in_: int<br>
+<br>
+Number of features seen during :term:`fit`. Only defined if the<br>
+underlying first estimator in `steps` exposes such an attribute<br>
+when fit.<br>
+<br>
+.. versionadded:: 0.24</span></a></td>
+<td class="fitted-att-type">int</td>
+<td>11</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-2" type="checkbox"><label for="sk-estimator-id-2" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>preprocess: ColumnTransformer</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html">?<span>Documentation for preprocess: ColumnTransformer</span></a></div></label><div class="sk-toggleable__content fitted" data-param-prefix="preprocess__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="user-set odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy transformers to clipboard" onclick="copyToClipboard('transformers',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=transformers,-list%20of%20tuples" class="param-doc-link" style="anchor-name: --doc-link-transformers;" rel="noreferrer" target="_blank">transformers <span class="param-doc-description" style="position-anchor: --doc-link-transformers;"> transformers: list of tuples<br>
+<br>
+List of (name, transformer, columns) tuples specifying the<br>
+transformer objects to be applied to subsets of the data.<br>
+<br>
+name : str<br>
+Like in Pipeline and FeatureUnion, this allows the transformer and<br>
+its parameters to be set using ``set_params`` and searched in grid<br>
+search.<br>
+transformer : {'drop', 'passthrough'} or estimator<br>
+Estimator must support :term:`fit` and :term:`transform`.<br>
+Special-cased strings 'drop' and 'passthrough' are accepted as<br>
+well, to indicate to drop the columns or to pass them through<br>
+untransformed, respectively.<br>
+columns : str, array-like of str, int, array-like of int, array-like of bool, slice or callable<br>
+Indexes the data on its second axis. Integers are interpreted as<br>
+positional columns, while strings can reference DataFrame columns<br>
+by name. A scalar string or int should be used where<br>
+``transformer`` expects X to be a 1d array-like (vector),<br>
+otherwise a 2d array will be passed to the transformer.<br>
+A callable is passed the input data `X` and can return any of the<br>
+above. To select multiple columns by name or dtype, you can use<br>
+:obj:`make_column_selector`.</span></a></td>
+<td class="value">[('numeric', ...), ('categorical', ...)]</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy remainder to clipboard" onclick="copyToClipboard('remainder',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=remainder,-%7B%27drop%27%2C%20%27passthrough%27%7D%20or%20estimator%2C%20default%3D%27drop%27" class="param-doc-link" style="anchor-name: --doc-link-remainder;" rel="noreferrer" target="_blank">remainder <span class="param-doc-description" style="position-anchor: --doc-link-remainder;"> remainder: {'drop', 'passthrough'} or estimator, default='drop'<br>
+<br>
+By default, only the specified columns in `transformers` are<br>
+transformed and combined in the output, and the non-specified<br>
+columns are dropped. (default of ``'drop'``).<br>
+By specifying ``remainder='passthrough'``, all remaining columns that<br>
+were not specified in `transformers`, but present in the data passed<br>
+to `fit` will be automatically passed through. This subset of columns<br>
+is concatenated with the output of the transformers. For dataframes,<br>
+extra columns not seen during `fit` will be excluded from the output<br>
+of `transform`.<br>
+By setting ``remainder`` to be an estimator, the remaining<br>
+non-specified columns will use the ``remainder`` estimator. The<br>
+estimator must support :term:`fit` and :term:`transform`.<br>
+Note that using this feature requires that the DataFrame columns<br>
+input at :term:`fit` and :term:`transform` have identical order.</span></a></td>
+<td class="value">'drop'</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy sparse_threshold to clipboard" onclick="copyToClipboard('sparse_threshold',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=sparse_threshold,-float%2C%20default%3D0.3" class="param-doc-link" style="anchor-name: --doc-link-sparse_threshold;" rel="noreferrer" target="_blank">sparse_threshold <span class="param-doc-description" style="position-anchor: --doc-link-sparse_threshold;"> sparse_threshold: float, default=0.3<br>
+<br>
+If the output of the different transformers contains sparse matrices,<br>
+these will be stacked as a sparse matrix if the overall density is<br>
+lower than this value. Use ``sparse_threshold=0`` to always return<br>
+dense. When the transformed output consists of all dense data, the<br>
+stacked result will be dense, and this keyword will be ignored.</span></a></td>
+<td class="value">0.3</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy n_jobs to clipboard" onclick="copyToClipboard('n_jobs',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=n_jobs,-int%2C%20default%3DNone" class="param-doc-link" style="anchor-name: --doc-link-n_jobs;" rel="noreferrer" target="_blank">n_jobs <span class="param-doc-description" style="position-anchor: --doc-link-n_jobs;"> n_jobs: int, default=None<br>
+<br>
+Number of jobs to run in parallel.<br>
+``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.<br>
+``-1`` means using all processors. See :term:`Glossary &lt;n_jobs&gt;`<br>
+for more details.</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy transformer_weights to clipboard" onclick="copyToClipboard('transformer_weights',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=transformer_weights,-dict%2C%20default%3DNone" class="param-doc-link" style="anchor-name: --doc-link-transformer_weights;" rel="noreferrer" target="_blank">transformer_weights <span class="param-doc-description" style="position-anchor: --doc-link-transformer_weights;"> transformer_weights: dict, default=None<br>
+<br>
+Multiplicative weights for features per transformer. The output of the<br>
+transformer is multiplied by these weights. Keys are transformer names,<br>
+values the weights.</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy verbose to clipboard" onclick="copyToClipboard('verbose',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=verbose,-bool%2C%20default%3DFalse" class="param-doc-link" style="anchor-name: --doc-link-verbose;" rel="noreferrer" target="_blank">verbose <span class="param-doc-description" style="position-anchor: --doc-link-verbose;"> verbose: bool, default=False<br>
+<br>
+If True, the time elapsed while fitting each transformer will be<br>
+printed as it is completed.</span></a></td>
+<td class="value">False</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy verbose_feature_names_out to clipboard" onclick="copyToClipboard('verbose_feature_names_out',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=verbose_feature_names_out,-bool%2C%20str%20or%20Callable%5B%5Bstr%2C%20str%5D%2C%20str%5D%2C%20default%3DTrue" class="param-doc-link" style="anchor-name: --doc-link-verbose_feature_names_out;" rel="noreferrer" target="_blank">verbose_feature_names_out <span class="param-doc-description" style="position-anchor: --doc-link-verbose_feature_names_out;"> verbose_feature_names_out: bool, str or Callable[[str, str], str], default=True<br>
+<br>
+- If True, :meth:`ColumnTransformer.get_feature_names_out` will prefix<br>
+all feature names with the name of the transformer that generated that<br>
+feature. It is equivalent to setting<br>
+`verbose_feature_names_out="{transformer_name}__{feature_name}"`.<br>
+- If False, :meth:`ColumnTransformer.get_feature_names_out` will not<br>
+prefix any feature names and will error if feature names are not<br>
+unique.<br>
+- If ``Callable[[str, str], str]``,<br>
+:meth:`ColumnTransformer.get_feature_names_out` will rename all the features<br>
+using the name of the transformer. The first argument of the callable is the<br>
+transformer name and the second argument is the feature name. The returned<br>
+string will be the new feature name.<br>
+- If ``str``, it must be a string ready for formatting. The given string will<br>
+be formatted using two field names: ``transformer_name`` and ``feature_name``.<br>
+e.g. ``"{feature_name}__{transformer_name}"``. See :meth:`str.format` method<br>
+from the standard library for more info.<br>
+<br>
+.. versionadded:: 1.0<br>
+<br>
+.. versionchanged:: 1.6<br>
+`verbose_feature_names_out` can be a callable or a string to be formatted.</span></a></td>
+<td class="value">True</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    
+        <div class="estimator-table">
+            <details>
+                <summary>Fitted attributes</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Name</th>
+<th data-quarto-table-cell-role="th">Type</th>
+<th data-quarto-table-cell-role="th">Value</th>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=feature_names_in_,-ndarray%20of%20shape%20%28n_features_in_%2C%29" class="param-doc-link" style="anchor-name: --doc-link-feature_names_in_;" rel="noreferrer" target="_blank">feature_names_in_ <span class="param-doc-description" style="position-anchor: --doc-link-feature_names_in_;"> feature_names_in_: ndarray of shape (`n_features_in_`,)<br>
+<br>
+Names of features seen during :term:`fit`. Defined only when `X`<br>
+has feature names that are all strings.<br>
+<br>
+.. versionadded:: 1.0</span></a></td>
+<td class="fitted-att-type">ndarray[object](11,)</td>
+<td>['mother_job','father_job','family_size',...,'mother_edu','father_edu', 'past_failures']</td>
+</tr>
+<tr class="default odd">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=n_features_in_,-int" class="param-doc-link" style="anchor-name: --doc-link-n_features_in_;" rel="noreferrer" target="_blank">n_features_in_ <span class="param-doc-description" style="position-anchor: --doc-link-n_features_in_;"> n_features_in_: int<br>
+<br>
+Number of features seen during :term:`fit`. Only defined if the<br>
+underlying transformers expose such an attribute when fit.<br>
+<br>
+.. versionadded:: 0.24</span></a></td>
+<td class="fitted-att-type">int</td>
+<td>11</td>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=named_transformers_,-%3Aclass%3A~sklearn.utils.Bunch" class="param-doc-link" style="anchor-name: --doc-link-named_transformers_;" rel="noreferrer" target="_blank">named_transformers_ <span class="param-doc-description" style="position-anchor: --doc-link-named_transformers_;"> named_transformers_: :class:`~sklearn.utils.Bunch`<br>
+<br>
+Read-only attribute to access any transformer by given name.<br>
+Keys are transformer names and values are the fitted transformer<br>
+objects.</span></a></td>
+<td class="fitted-att-type">Bunch</td>
+<td>{'numeric': S...own='ignore')}</td>
+</tr>
+<tr class="default odd">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=output_indices_,-dict" class="param-doc-link" style="anchor-name: --doc-link-output_indices_;" rel="noreferrer" target="_blank">output_indices_ <span class="param-doc-description" style="position-anchor: --doc-link-output_indices_;"> output_indices_: dict<br>
+<br>
+A dictionary from each transformer name to a slice, where the slice<br>
+corresponds to indices in the transformed output. This is useful to<br>
+inspect which transformer is responsible for which transformed<br>
+feature(s).<br>
+<br>
+.. versionadded:: 1.0</span></a></td>
+<td class="fitted-att-type">dict</td>
+<td>{'ca...al': slice(3, 27, None), 'numeric': slice(0, 3, None), 're...er': slice(0, 0, None)}</td>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=sparse_output_,-bool" class="param-doc-link" style="anchor-name: --doc-link-sparse_output_;" rel="noreferrer" target="_blank">sparse_output_ <span class="param-doc-description" style="position-anchor: --doc-link-sparse_output_;"> sparse_output_: bool<br>
+<br>
+Boolean flag indicating whether the output of ``transform`` is a<br>
+sparse matrix or a dense numpy array, which depends on the output<br>
+of the individual transformers and the `sparse_threshold` keyword.</span></a></td>
+<td class="fitted-att-type">bool</td>
+<td>False</td>
+</tr>
+<tr class="default odd">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=transformers_,-list" class="param-doc-link" style="anchor-name: --doc-link-transformers_;" rel="noreferrer" target="_blank">transformers_ <span class="param-doc-description" style="position-anchor: --doc-link-transformers_;"> transformers_: list<br>
+<br>
+The collection of fitted transformers as tuples of (name,<br>
+fitted_transformer, column). `fitted_transformer` can be an estimator,<br>
+or `'drop'`; `'passthrough'` is replaced with an equivalent<br>
+:class:`~sklearn.preprocessing.FunctionTransformer`. In case there were<br>
+no columns selected, this will be the unfitted transformer. If there<br>
+are remaining columns, the final element is a tuple of the form:<br>
+('remainder', transformer, remaining_columns) corresponding to the<br>
+``remainder`` parameter. If there are remaining columns, then<br>
+``len(transformers_)==len(transformers)+1``, otherwise<br>
+``len(transformers_)==len(transformers)``.<br>
+<br>
+.. versionadded:: 1.7<br>
+The format of the remaining columns now attempts to match that of the other<br>
+transformers: if all columns were provided as column names (`str`), the<br>
+remaining columns are stored as column names; if all columns were provided<br>
+as mask arrays (`bool`), so are the remaining columns; in all other cases<br>
+the remaining columns are stored as indices (`int`).</span></a></td>
+<td class="fitted-att-type">list</td>
+<td>[('numeric', StandardScaler(), ['mo...du', 'fa...du', 'pa...es']), ('ca...al', OneHotEncoder...nown='ignore'), ['mo...ob', 'fa...ob', 'fa...ze', 'pa...us', ...])]</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-3" type="checkbox"><label for="sk-estimator-id-3" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>numeric</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="preprocess__numeric__"><pre>['mother_edu', 'father_edu', 'past_failures']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-4" type="checkbox"><label for="sk-estimator-id-4" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>StandardScaler</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.StandardScaler.html">?<span>Documentation for StandardScaler</span></a></div></label><div class="sk-toggleable__content fitted" data-param-prefix="preprocess__numeric__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy copy to clipboard" onclick="copyToClipboard('copy',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.StandardScaler.html#:~:text=copy,-bool%2C%20default%3DTrue" class="param-doc-link" style="anchor-name: --doc-link-copy;" rel="noreferrer" target="_blank">copy <span class="param-doc-description" style="position-anchor: --doc-link-copy;"> copy: bool, default=True<br>
+<br>
+If False, try to avoid a copy and do inplace scaling instead.<br>
+This is not guaranteed to always work inplace; e.g. if the data is<br>
+not a NumPy array or scipy.sparse CSR matrix, a copy may still be<br>
+returned.</span></a></td>
+<td class="value">True</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy with_mean to clipboard" onclick="copyToClipboard('with_mean',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.StandardScaler.html#:~:text=with_mean,-bool%2C%20default%3DTrue" class="param-doc-link" style="anchor-name: --doc-link-with_mean;" rel="noreferrer" target="_blank">with_mean <span class="param-doc-description" style="position-anchor: --doc-link-with_mean;"> with_mean: bool, default=True<br>
+<br>
+If True, center the data before scaling.<br>
+This does not work (and will raise an exception) when attempted on<br>
+sparse matrices, because centering them entails building a dense<br>
+matrix which in common use cases is likely to be too large to fit in<br>
+memory.</span></a></td>
+<td class="value">True</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy with_std to clipboard" onclick="copyToClipboard('with_std',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.StandardScaler.html#:~:text=with_std,-bool%2C%20default%3DTrue" class="param-doc-link" style="anchor-name: --doc-link-with_std;" rel="noreferrer" target="_blank">with_std <span class="param-doc-description" style="position-anchor: --doc-link-with_std;"> with_std: bool, default=True<br>
+<br>
+If True, scale the data to unit variance (or equivalently,<br>
+unit standard deviation).</span></a></td>
+<td class="value">True</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    
+        <div class="estimator-table">
+            <details>
+                <summary>Fitted attributes</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Name</th>
+<th data-quarto-table-cell-role="th">Type</th>
+<th data-quarto-table-cell-role="th">Value</th>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.StandardScaler.html#:~:text=feature_names_in_,-ndarray%20of%20shape%20%28n_features_in_%2C%29" class="param-doc-link" style="anchor-name: --doc-link-feature_names_in_;" rel="noreferrer" target="_blank">feature_names_in_ <span class="param-doc-description" style="position-anchor: --doc-link-feature_names_in_;"> feature_names_in_: ndarray of shape (`n_features_in_`,)<br>
+<br>
+Names of features seen during :term:`fit`. Defined only when `X`<br>
+has feature names that are all strings.<br>
+<br>
+.. versionadded:: 1.0</span></a></td>
+<td class="fitted-att-type">ndarray[object](3,)</td>
+<td>['mother_edu','father_edu','past_failures']</td>
+</tr>
+<tr class="default odd">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.StandardScaler.html#:~:text=mean_,-ndarray%20of%20shape%20%28n_features%2C%29%20or%20None" class="param-doc-link" style="anchor-name: --doc-link-mean_;" rel="noreferrer" target="_blank">mean_ <span class="param-doc-description" style="position-anchor: --doc-link-mean_;"> mean_: ndarray of shape (n_features,) or None<br>
+<br>
+The mean value for each feature in the training set.<br>
+Equal to ``None`` when ``with_mean=False`` and ``with_std=False``.</span></a></td>
+<td class="fitted-att-type">ndarray[float64](3,)</td>
+<td>[2.74,2.52,0.36]</td>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.StandardScaler.html#:~:text=n_features_in_,-int" class="param-doc-link" style="anchor-name: --doc-link-n_features_in_;" rel="noreferrer" target="_blank">n_features_in_ <span class="param-doc-description" style="position-anchor: --doc-link-n_features_in_;"> n_features_in_: int<br>
+<br>
+Number of features seen during :term:`fit`.<br>
+<br>
+.. versionadded:: 0.24</span></a></td>
+<td class="fitted-att-type">int</td>
+<td>3</td>
+</tr>
+<tr class="default odd">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.StandardScaler.html#:~:text=n_samples_seen_,-int%20or%20ndarray%20of%20shape%20%28n_features%2C%29" class="param-doc-link" style="anchor-name: --doc-link-n_samples_seen_;" rel="noreferrer" target="_blank">n_samples_seen_ <span class="param-doc-description" style="position-anchor: --doc-link-n_samples_seen_;"> n_samples_seen_: int or ndarray of shape (n_features,)<br>
+<br>
+The number of samples processed by the estimator for each feature.<br>
+If there are no missing samples, the ``n_samples_seen`` will be an<br>
+integer, otherwise it will be an array of dtype int. If<br>
+`sample_weights` are used it will be a float (if no missing data)<br>
+or an array of dtype float that sums the weights seen so far.<br>
+Will be reset on new calls to fit, but increments across<br>
+``partial_fit`` calls.</span></a></td>
+<td class="fitted-att-type">float64</td>
+<td>296</td>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.StandardScaler.html#:~:text=scale_,-ndarray%20of%20shape%20%28n_features%2C%29%20or%20None" class="param-doc-link" style="anchor-name: --doc-link-scale_;" rel="noreferrer" target="_blank">scale_ <span class="param-doc-description" style="position-anchor: --doc-link-scale_;"> scale_: ndarray of shape (n_features,) or None<br>
+<br>
+Per feature relative scaling of the data to achieve zero mean and unit<br>
+variance. Generally this is calculated using `np.sqrt(var_)`. If a<br>
+variance is zero, we can't achieve unit variance, and the data is left<br>
+as-is, giving a scaling factor of 1. `scale_` is equal to `None`<br>
+when `with_std=False`.<br>
+<br>
+.. versionadded:: 0.17<br>
+*scale_*</span></a></td>
+<td class="fitted-att-type">ndarray[float64](3,)</td>
+<td>[1.09,1.07,0.77]</td>
+</tr>
+<tr class="default odd">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.StandardScaler.html#:~:text=var_,-ndarray%20of%20shape%20%28n_features%2C%29%20or%20None" class="param-doc-link" style="anchor-name: --doc-link-var_;" rel="noreferrer" target="_blank">var_ <span class="param-doc-description" style="position-anchor: --doc-link-var_;"> var_: ndarray of shape (n_features,) or None<br>
+<br>
+The variance for each feature in the training set. Used to compute<br>
+`scale_`. Equal to ``None`` when ``with_mean=False`` and<br>
+``with_std=False``.</span></a></td>
+<td class="fitted-att-type">ndarray[float64](3,)</td>
+<td>[1.19,1.14,0.59]</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    </div></div></div>
+        <div class="features fitted">
+          <details>
+            <summary>
+              <div class="arrow"></div>
+              <div>3 features</div>
+              <div class="image-container">
+                <button type="button" class="copy-paste-icon" title="Copy output features (max 100)" aria-label="Copy output features (max 100)" onclick="
+                  event.stopPropagation();
+                  event.preventDefault();
+                  copyFeatureNamesToClipboard(this);
+                  ">
+                </button>
+              </div>
+            </summary>
+            <div class="features-container">
+                
+<table class="features-table caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td>mother_edu</td>
+</tr>
+<tr class="even">
+<td>father_edu</td>
+</tr>
+<tr class="odd">
+<td>past_failures</td>
+</tr>
+</tbody>
+</table>
+
+            </div>
+          </details>
+        </div>
+    </div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-5" type="checkbox"><label for="sk-estimator-id-5" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>categorical</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="preprocess__categorical__"><pre>['mother_job', 'father_job', 'family_size', 'parent_status', 'studytime', 'family_support', 'school', 'address']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-6" type="checkbox"><label for="sk-estimator-id-6" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>OneHotEncoder</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html">?<span>Documentation for OneHotEncoder</span></a></div></label><div class="sk-toggleable__content fitted" data-param-prefix="preprocess__categorical__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="user-set odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy handle_unknown to clipboard" onclick="copyToClipboard('handle_unknown',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=handle_unknown,-%7B%27error%27%2C%20%27ignore%27%2C%20%27infrequent_if_exist%27%2C%20%27warn%27%7D%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20default%3D%27error%27" class="param-doc-link" style="anchor-name: --doc-link-handle_unknown;" rel="noreferrer" target="_blank">handle_unknown <span class="param-doc-description" style="position-anchor: --doc-link-handle_unknown;"> handle_unknown: {'error', 'ignore', 'infrequent_if_exist', 'warn'}, default='error'<br>
+<br>
+Specifies the way unknown categories are handled during :meth:`transform`.<br>
+<br>
+- 'error' : Raise an error if an unknown category is present during transform.<br>
+- 'ignore' : When an unknown category is encountered during<br>
+transform, the resulting one-hot encoded columns for this feature<br>
+will be all zeros. In the inverse transform, an unknown category<br>
+will be denoted as None.<br>
+- 'infrequent_if_exist' : When an unknown category is encountered<br>
+during transform, the resulting one-hot encoded columns for this<br>
+feature will map to the infrequent category if it exists. The<br>
+infrequent category will be mapped to the last position in the<br>
+encoding. During inverse transform, an unknown category will be<br>
+mapped to the category denoted `'infrequent'` if it exists. If the<br>
+`'infrequent'` category does not exist, then :meth:`transform` and<br>
+:meth:`inverse_transform` will handle an unknown category as with<br>
+`handle_unknown='ignore'`. Infrequent categories exist based on<br>
+`min_frequency` and `max_categories`. Read more in the<br>
+:ref:`User Guide &lt;encoder_infrequent_categories&gt;`.<br>
+- 'warn' : When an unknown category is encountered during transform<br>
+a warning is issued, and the encoding then proceeds as described for<br>
+`handle_unknown="infrequent_if_exist"`.<br>
+<br>
+.. versionchanged:: 1.1<br>
+`'infrequent_if_exist'` was added to automatically handle unknown<br>
+categories and infrequent categories.<br>
+<br>
+.. versionadded:: 1.6<br>
+The option `"warn"` was added in 1.6.</span></a></td>
+<td class="value">'ignore'</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy categories to clipboard" onclick="copyToClipboard('categories',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=categories,-%27auto%27%20or%20a%20list%20of%20array-like%2C%20default%3D%27auto%27" class="param-doc-link" style="anchor-name: --doc-link-categories;" rel="noreferrer" target="_blank">categories <span class="param-doc-description" style="position-anchor: --doc-link-categories;"> categories: 'auto' or a list of array-like, default='auto'<br>
+<br>
+Categories (unique values) per feature:<br>
+<br>
+- 'auto' : Determine categories automatically from the training data.<br>
+- list : ``categories[i]`` holds the categories expected in the ith<br>
+column. The passed categories should not mix strings and numeric<br>
+values within a single feature, and should be sorted in case of<br>
+numeric values.<br>
+<br>
+The used categories can be found in the ``categories_`` attribute.<br>
+<br>
+.. versionadded:: 0.20</span></a></td>
+<td class="value">'auto'</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy drop to clipboard" onclick="copyToClipboard('drop',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=drop,-%7B%27first%27%2C%20%27if_binary%27%7D%20or%20an%20array-like%20of%20shape%20%28n_features%2C%29%2C%20%20%20%20%20%20%20%20%20%20%20%20%20default%3DNone" class="param-doc-link" style="anchor-name: --doc-link-drop;" rel="noreferrer" target="_blank">drop <span class="param-doc-description" style="position-anchor: --doc-link-drop;"> drop: {'first', 'if_binary'} or an array-like of shape (n_features,), default=None<br>
+<br>
+Specifies a methodology to use to drop one of the categories per<br>
+feature. This is useful in situations where perfectly collinear<br>
+features cause problems, such as when feeding the resulting data<br>
+into an unregularized linear regression model.<br>
+<br>
+However, dropping one category breaks the symmetry of the original<br>
+representation and can therefore induce a bias in downstream models,<br>
+for instance for penalized linear classification or regression models.<br>
+<br>
+- None : retain all features (the default).<br>
+- 'first' : drop the first category in each feature. If only one<br>
+category is present, the feature will be dropped entirely.<br>
+- 'if_binary' : drop the first category in each feature with two<br>
+categories. Features with 1 or more than 2 categories are<br>
+left intact.<br>
+- array : ``drop[i]`` is the category in feature ``X[:, i]`` that<br>
+should be dropped.<br>
+<br>
+When `max_categories` or `min_frequency` is configured to group<br>
+infrequent categories, the dropping behavior is handled after the<br>
+grouping.<br>
+<br>
+.. versionadded:: 0.21<br>
+The parameter `drop` was added in 0.21.<br>
+<br>
+.. versionchanged:: 0.23<br>
+The option `drop='if_binary'` was added in 0.23.<br>
+<br>
+.. versionchanged:: 1.1<br>
+Support for dropping infrequent categories.</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy sparse_output to clipboard" onclick="copyToClipboard('sparse_output',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=sparse_output,-bool%2C%20default%3DTrue" class="param-doc-link" style="anchor-name: --doc-link-sparse_output;" rel="noreferrer" target="_blank">sparse_output <span class="param-doc-description" style="position-anchor: --doc-link-sparse_output;"> sparse_output: bool, default=True<br>
+<br>
+When ``True``, it returns a SciPy sparse matrix/array<br>
+in "Compressed Sparse Row" (CSR) format.<br>
+<br>
+.. versionadded:: 1.2<br>
+`sparse` was renamed to `sparse_output`</span></a></td>
+<td class="value">True</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy dtype to clipboard" onclick="copyToClipboard('dtype',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=dtype,-number%20type%2C%20default%3Dnp.float64" class="param-doc-link" style="anchor-name: --doc-link-dtype;" rel="noreferrer" target="_blank">dtype <span class="param-doc-description" style="position-anchor: --doc-link-dtype;"> dtype: number type, default=np.float64<br>
+<br>
+Desired dtype of output.</span></a></td>
+<td class="value">&lt;class 'numpy.float64'&gt;</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy min_frequency to clipboard" onclick="copyToClipboard('min_frequency',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=min_frequency,-int%20or%20float%2C%20default%3DNone" class="param-doc-link" style="anchor-name: --doc-link-min_frequency;" rel="noreferrer" target="_blank">min_frequency <span class="param-doc-description" style="position-anchor: --doc-link-min_frequency;"> min_frequency: int or float, default=None<br>
+<br>
+Specifies the minimum frequency below which a category will be<br>
+considered infrequent.<br>
+<br>
+- If `int`, categories with a smaller cardinality will be considered<br>
+infrequent.<br>
+<br>
+- If `float`, categories with a smaller cardinality than<br>
+`min_frequency * n_samples` will be considered infrequent.<br>
+<br>
+.. versionadded:: 1.1<br>
+Read more in the :ref:`User Guide &lt;encoder_infrequent_categories&gt;`.</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy max_categories to clipboard" onclick="copyToClipboard('max_categories',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=max_categories,-int%2C%20default%3DNone" class="param-doc-link" style="anchor-name: --doc-link-max_categories;" rel="noreferrer" target="_blank">max_categories <span class="param-doc-description" style="position-anchor: --doc-link-max_categories;"> max_categories: int, default=None<br>
+<br>
+Specifies an upper limit to the number of output features for each input<br>
+feature when considering infrequent categories. If there are infrequent<br>
+categories, `max_categories` includes the category representing the<br>
+infrequent categories along with the frequent categories. If `None`,<br>
+there is no limit to the number of output features.<br>
+<br>
+.. versionadded:: 1.1<br>
+Read more in the :ref:`User Guide &lt;encoder_infrequent_categories&gt;`.</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy feature_name_combiner to clipboard" onclick="copyToClipboard('feature_name_combiner',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=feature_name_combiner,-%22concat%22%20or%20callable%2C%20default%3D%22concat%22" class="param-doc-link" style="anchor-name: --doc-link-feature_name_combiner;" rel="noreferrer" target="_blank">feature_name_combiner <span class="param-doc-description" style="position-anchor: --doc-link-feature_name_combiner;"> feature_name_combiner: "concat" or callable, default="concat"<br>
+<br>
+Callable with signature `def callable(input_feature, category)` that returns a<br>
+string. This is used to create feature names to be returned by<br>
+:meth:`get_feature_names_out`.<br>
+<br>
+`"concat"` concatenates encoded feature name and category with<br>
+`feature + "_" + str(category)`.E.g. feature X with values 1, 6, 7 create<br>
+feature names `X_1, X_6, X_7`.<br>
+<br>
+.. versionadded:: 1.3</span></a></td>
+<td class="value">'concat'</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    
+        <div class="estimator-table">
+            <details>
+                <summary>Fitted attributes</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Name</th>
+<th data-quarto-table-cell-role="th">Type</th>
+<th data-quarto-table-cell-role="th">Value</th>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=categories_,-list%20of%20arrays" class="param-doc-link" style="anchor-name: --doc-link-categories_;" rel="noreferrer" target="_blank">categories_ <span class="param-doc-description" style="position-anchor: --doc-link-categories_;"> categories_: list of arrays<br>
+<br>
+The categories of each feature determined during fitting<br>
+(in order of the features in X and corresponding with the output<br>
+of ``transform``). This includes the category specified in ``drop``<br>
+(if any).</span></a></td>
+<td class="fitted-att-type">list</td>
+<td>[array(['at_ho... dtype=object), array(['at_ho... dtype=object), array(['3 or ... dtype=object), array(['apart... dtype=object), ...]</td>
+</tr>
+<tr class="default odd">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=drop_idx_,-array%20of%20shape%20%28n_features%2C%29" class="param-doc-link" style="anchor-name: --doc-link-drop_idx_;" rel="noreferrer" target="_blank">drop_idx_ <span class="param-doc-description" style="position-anchor: --doc-link-drop_idx_;"> drop_idx_: array of shape (n_features,)<br>
+<br>
+- ``drop_idx_[i]`` is the index in ``categories_[i]`` of the category<br>
+to be dropped for each feature.<br>
+- ``drop_idx_[i] = None`` if no category is to be dropped from the<br>
+feature with index ``i``, e.g. when `drop='if_binary'` and the<br>
+feature isn't binary.<br>
+- ``drop_idx_ = None`` if all the transformed features will be<br>
+retained.<br>
+<br>
+If infrequent categories are enabled by setting `min_frequency` or<br>
+`max_categories` to a non-default value and `drop_idx[i]` corresponds<br>
+to an infrequent category, then the entire infrequent category is<br>
+dropped.<br>
+<br>
+.. versionchanged:: 0.23<br>
+Added the possibility to contain `None` values.</span></a></td>
+<td class="fitted-att-type">NoneType</td>
+<td>None</td>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=feature_names_in_,-ndarray%20of%20shape%20%28n_features_in_%2C%29" class="param-doc-link" style="anchor-name: --doc-link-feature_names_in_;" rel="noreferrer" target="_blank">feature_names_in_ <span class="param-doc-description" style="position-anchor: --doc-link-feature_names_in_;"> feature_names_in_: ndarray of shape (`n_features_in_`,)<br>
+<br>
+Names of features seen during :term:`fit`. Defined only when `X`<br>
+has feature names that are all strings.<br>
+<br>
+.. versionadded:: 1.0</span></a></td>
+<td class="fitted-att-type">ndarray[object](8,)</td>
+<td>['mother_job','father_job','family_size',...,'family_support','school', 'address']</td>
+</tr>
+<tr class="default odd">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=n_features_in_,-int" class="param-doc-link" style="anchor-name: --doc-link-n_features_in_;" rel="noreferrer" target="_blank">n_features_in_ <span class="param-doc-description" style="position-anchor: --doc-link-n_features_in_;"> n_features_in_: int<br>
+<br>
+Number of features seen during :term:`fit`.<br>
+<br>
+.. versionadded:: 1.0</span></a></td>
+<td class="fitted-att-type">int</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    </div></div></div>
+        <div class="features fitted">
+          <details>
+            <summary>
+              <div class="arrow"></div>
+              <div>24 features</div>
+              <div class="image-container">
+                <button type="button" class="copy-paste-icon" title="Copy output features (max 100)" aria-label="Copy output features (max 100)" onclick="
+                  event.stopPropagation();
+                  event.preventDefault();
+                  copyFeatureNamesToClipboard(this);
+                  ">
+                </button>
+              </div>
+            </summary>
+            <div class="features-container">
+                
+<table class="features-table caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td>mother_job_at_home</td>
+</tr>
+<tr class="even">
+<td>mother_job_health</td>
+</tr>
+<tr class="odd">
+<td>mother_job_other</td>
+</tr>
+<tr class="even">
+<td>mother_job_services</td>
+</tr>
+<tr class="odd">
+<td>mother_job_teacher</td>
+</tr>
+<tr class="even">
+<td>father_job_at_home</td>
+</tr>
+<tr class="odd">
+<td>father_job_health</td>
+</tr>
+<tr class="even">
+<td>father_job_other</td>
+</tr>
+<tr class="odd">
+<td>father_job_services</td>
+</tr>
+<tr class="even">
+<td>father_job_teacher</td>
+</tr>
+<tr class="odd">
+<td>family_size_3 or fewer</td>
+</tr>
+<tr class="even">
+<td>family_size_greater than 3</td>
+</tr>
+<tr class="odd">
+<td>parent_status_apart</td>
+</tr>
+<tr class="even">
+<td>parent_status_together</td>
+</tr>
+<tr class="odd">
+<td>studytime_2-5 hours</td>
+</tr>
+<tr class="even">
+<td>studytime_5-10 hours</td>
+</tr>
+<tr class="odd">
+<td>studytime_&lt;2 hours</td>
+</tr>
+<tr class="even">
+<td>studytime_&gt;10 hours</td>
+</tr>
+<tr class="odd">
+<td>family_support_no</td>
+</tr>
+<tr class="even">
+<td>family_support_yes</td>
+</tr>
+<tr class="odd">
+<td>school_Gabriel Pereira</td>
+</tr>
+<tr class="even">
+<td>school_Mousinho da Silveira</td>
+</tr>
+<tr class="odd">
+<td>address_rural</td>
+</tr>
+<tr class="even">
+<td>address_urban</td>
+</tr>
+</tbody>
+</table>
+
+            </div>
+          </details>
+        </div>
+    </div></div></div></div><div class="total_features">
+        <div class="features fitted">
+          <details>
+            <summary>
+              <div class="arrow"></div>
+              <div>27 features</div>
+              <div class="image-container">
+                <button type="button" class="copy-paste-icon" title="Copy output features (max 100)" aria-label="Copy output features (max 100)" onclick="
+                  event.stopPropagation();
+                  event.preventDefault();
+                  copyFeatureNamesToClipboard(this);
+                  ">
+                </button>
+              </div>
+            </summary>
+            <div class="features-container">
+                
+<table class="features-table caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td>numeric__mother_edu</td>
+</tr>
+<tr class="even">
+<td>numeric__father_edu</td>
+</tr>
+<tr class="odd">
+<td>numeric__past_failures</td>
+</tr>
+<tr class="even">
+<td>categorical__mother_job_at_home</td>
+</tr>
+<tr class="odd">
+<td>categorical__mother_job_health</td>
+</tr>
+<tr class="even">
+<td>categorical__mother_job_other</td>
+</tr>
+<tr class="odd">
+<td>categorical__mother_job_services</td>
+</tr>
+<tr class="even">
+<td>categorical__mother_job_teacher</td>
+</tr>
+<tr class="odd">
+<td>categorical__father_job_at_home</td>
+</tr>
+<tr class="even">
+<td>categorical__father_job_health</td>
+</tr>
+<tr class="odd">
+<td>categorical__father_job_other</td>
+</tr>
+<tr class="even">
+<td>categorical__father_job_services</td>
+</tr>
+<tr class="odd">
+<td>categorical__father_job_teacher</td>
+</tr>
+<tr class="even">
+<td>categorical__family_size_3 or fewer</td>
+</tr>
+<tr class="odd">
+<td>categorical__family_size_greater than 3</td>
+</tr>
+<tr class="even">
+<td>categorical__parent_status_apart</td>
+</tr>
+<tr class="odd">
+<td>categorical__parent_status_together</td>
+</tr>
+<tr class="even">
+<td>categorical__studytime_2-5 hours</td>
+</tr>
+<tr class="odd">
+<td>categorical__studytime_5-10 hours</td>
+</tr>
+<tr class="even">
+<td>categorical__studytime_&lt;2 hours</td>
+</tr>
+<tr class="odd">
+<td>categorical__studytime_&gt;10 hours</td>
+</tr>
+<tr class="even">
+<td>categorical__family_support_no</td>
+</tr>
+<tr class="odd">
+<td>categorical__family_support_yes</td>
+</tr>
+<tr class="even">
+<td>categorical__school_Gabriel Pereira</td>
+</tr>
+<tr class="odd">
+<td>categorical__school_Mousinho da Silveira</td>
+</tr>
+<tr class="even">
+<td>categorical__address_rural</td>
+</tr>
+<tr class="odd">
+<td>categorical__address_urban</td>
+</tr>
+</tbody>
+</table>
+
+            </div>
+          </details>
+        </div>
+    </div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-7" type="checkbox"><label for="sk-estimator-id-7" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>LogisticRegression</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html">?<span>Documentation for LogisticRegression</span></a></div></label><div class="sk-toggleable__content fitted" data-param-prefix="classifier__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="user-set odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy random_state to clipboard" onclick="copyToClipboard('random_state',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=random_state,-int%2C%20RandomState%20instance%2C%20default%3DNone" class="param-doc-link" style="anchor-name: --doc-link-random_state;" rel="noreferrer" target="_blank">random_state <span class="param-doc-description" style="position-anchor: --doc-link-random_state;"> random_state: int, RandomState instance, default=None<br>
+<br>
+Only used for `solver` == 'sag', 'saga' or 'liblinear' to shuffle the<br>
+data. It has no effect on the other solvers.<br>
+See :term:`Glossary &lt;random_state&gt;` for details.</span></a></td>
+<td class="value">522</td>
+</tr>
+<tr class="user-set even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy max_iter to clipboard" onclick="copyToClipboard('max_iter',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=max_iter,-int%2C%20default%3D100" class="param-doc-link" style="anchor-name: --doc-link-max_iter;" rel="noreferrer" target="_blank">max_iter <span class="param-doc-description" style="position-anchor: --doc-link-max_iter;"> max_iter: int, default=100<br>
+<br>
+Maximum number of iterations taken for the solvers to converge.</span></a></td>
+<td class="value">1000</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy penalty to clipboard" onclick="copyToClipboard('penalty',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=penalty,-%7B%27l1%27%2C%20%27l2%27%2C%20%27elasticnet%27%2C%20None%7D%2C%20default%3D%27l2%27" class="param-doc-link" style="anchor-name: --doc-link-penalty;" rel="noreferrer" target="_blank">penalty <span class="param-doc-description" style="position-anchor: --doc-link-penalty;"> penalty: {'l1', 'l2', 'elasticnet', None}, default='l2'<br>
+<br>
+Specify the norm of the penalty:<br>
+<br>
+- `None`: no penalty is added;<br>
+- `'l2'`: add an L2 penalty term and it is the default choice;<br>
+- `'l1'`: add an L1 penalty term;<br>
+- `'elasticnet'`: both L1 and L2 penalty terms are added.<br>
+<br>
+.. warning::<br>
+Some penalties may not work with some solvers. See the parameter<br>
+`solver` below, to know the compatibility between the penalty and<br>
+solver.<br>
+<br>
+.. versionadded:: 0.19<br>
+l1 penalty with SAGA solver (allowing 'multinomial' + L1)<br>
+<br>
+.. deprecated:: 1.8<br>
+`penalty` was deprecated in version 1.8 and will be removed in 1.10.<br>
+Use `l1_ratio` and `C` instead. `l1_ratio=0` for `penalty='l2'`,<br>
+`l1_ratio=1` for `penalty='l1'`, `l1_ratio` set to any float between 0 and 1<br>
+for `penalty='elasticnet'`, and `C=np.inf` for `penalty=None`.</span></a></td>
+<td class="value">'deprecated'</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy C to clipboard" onclick="copyToClipboard('C',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=C,-float%2C%20default%3D1.0" class="param-doc-link" style="anchor-name: --doc-link-C;" rel="noreferrer" target="_blank">C <span class="param-doc-description" style="position-anchor: --doc-link-C;"> C: float, default=1.0<br>
+<br>
+Inverse of regularization strength; must be a positive float.<br>
+Like in support vector machines, smaller values specify stronger<br>
+regularization. `C=np.inf` results in unpenalized logistic regression.<br>
+For a visual example on the effect of tuning the `C` parameter<br>
+with an L1 penalty, see:<br>
+:ref:`sphx_glr_auto_examples_linear_model_plot_logistic_path.py`.</span></a></td>
+<td class="value">1.0</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy l1_ratio to clipboard" onclick="copyToClipboard('l1_ratio',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=l1_ratio,-float%2C%20default%3D0.0" class="param-doc-link" style="anchor-name: --doc-link-l1_ratio;" rel="noreferrer" target="_blank">l1_ratio <span class="param-doc-description" style="position-anchor: --doc-link-l1_ratio;"> l1_ratio: float, default=0.0<br>
+<br>
+The Elastic-Net mixing parameter, with `0 &lt;= l1_ratio &lt;= 1`. Setting<br>
+`l1_ratio=1` gives a pure L1-penalty, setting `l1_ratio=0` a pure L2-penalty.<br>
+Any value between 0 and 1 gives an Elastic-Net penalty of the form<br>
+`l1_ratio * L1 + (1 - l1_ratio) * L2`.<br>
+<br>
+.. warning::<br>
+Certain values of `l1_ratio`, i.e. some penalties, may not work with some<br>
+solvers. See the parameter `solver` below, to know the compatibility between<br>
+the penalty and solver.<br>
+<br>
+.. versionchanged:: 1.8<br>
+Default value changed from None to 0.0.<br>
+<br>
+.. deprecated:: 1.8<br>
+`None` is deprecated and will be removed in version 1.10. Always use<br>
+`l1_ratio` to specify the penalty type.</span></a></td>
+<td class="value">0.0</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy dual to clipboard" onclick="copyToClipboard('dual',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=dual,-bool%2C%20default%3DFalse" class="param-doc-link" style="anchor-name: --doc-link-dual;" rel="noreferrer" target="_blank">dual <span class="param-doc-description" style="position-anchor: --doc-link-dual;"> dual: bool, default=False<br>
+<br>
+Dual (constrained) or primal (regularized, see also<br>
+:ref:`this equation &lt;regularized-logistic-loss&gt;`) formulation. Dual formulation<br>
+is only implemented for l2 penalty with liblinear solver. Prefer `dual=False`<br>
+when n_samples &gt; n_features.</span></a></td>
+<td class="value">False</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy tol to clipboard" onclick="copyToClipboard('tol',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=tol,-float%2C%20default%3D1e-4" class="param-doc-link" style="anchor-name: --doc-link-tol;" rel="noreferrer" target="_blank">tol <span class="param-doc-description" style="position-anchor: --doc-link-tol;"> tol: float, default=1e-4<br>
+<br>
+Tolerance for stopping criteria.</span></a></td>
+<td class="value">0.0001</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy fit_intercept to clipboard" onclick="copyToClipboard('fit_intercept',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=fit_intercept,-bool%2C%20default%3DTrue" class="param-doc-link" style="anchor-name: --doc-link-fit_intercept;" rel="noreferrer" target="_blank">fit_intercept <span class="param-doc-description" style="position-anchor: --doc-link-fit_intercept;"> fit_intercept: bool, default=True<br>
+<br>
+Specifies if a constant (a.k.a. bias or intercept) should be<br>
+added to the decision function.</span></a></td>
+<td class="value">True</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy intercept_scaling to clipboard" onclick="copyToClipboard('intercept_scaling',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=intercept_scaling,-float%2C%20default%3D1" class="param-doc-link" style="anchor-name: --doc-link-intercept_scaling;" rel="noreferrer" target="_blank">intercept_scaling <span class="param-doc-description" style="position-anchor: --doc-link-intercept_scaling;"> intercept_scaling: float, default=1<br>
+<br>
+Useful only when the solver `liblinear` is used<br>
+and `self.fit_intercept` is set to `True`. In this case, `x` becomes<br>
+`[x, self.intercept_scaling]`,<br>
+i.e. a "synthetic" feature with constant value equal to<br>
+`intercept_scaling` is appended to the instance vector.<br>
+The intercept becomes<br>
+``intercept_scaling * synthetic_feature_weight``.<br>
+<br>
+.. note::<br>
+The synthetic feature weight is subject to L1 or L2<br>
+regularization as all other features.<br>
+To lessen the effect of regularization on synthetic feature weight<br>
+(and therefore on the intercept) `intercept_scaling` has to be increased.</span></a></td>
+<td class="value">1</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy class_weight to clipboard" onclick="copyToClipboard('class_weight',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=class_weight,-dict%20or%20%27balanced%27%2C%20default%3DNone" class="param-doc-link" style="anchor-name: --doc-link-class_weight;" rel="noreferrer" target="_blank">class_weight <span class="param-doc-description" style="position-anchor: --doc-link-class_weight;"> class_weight: dict or 'balanced', default=None<br>
+<br>
+Weights associated with classes in the form ``{class_label: weight}``.<br>
+If not given, all classes are supposed to have weight one.<br>
+<br>
+The "balanced" mode uses the values of y to automatically adjust<br>
+weights inversely proportional to class frequencies in the input data<br>
+as ``n_samples / (n_classes * np.bincount(y))``.<br>
+<br>
+Note that these weights will be multiplied with sample_weight (passed<br>
+through the fit method) if sample_weight is specified.<br>
+<br>
+.. versionadded:: 0.17<br>
+*class_weight='balanced'*</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy solver to clipboard" onclick="copyToClipboard('solver',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=solver,-%7B%27lbfgs%27%2C%20%27liblinear%27%2C%20%27newton-cg%27%2C%20%27newton-cholesky%27%2C%20%27sag%27%2C%20%27saga%27%7D%2C%20%20%20%20%20%20%20%20%20%20%20%20%20default%3D%27lbfgs%27" class="param-doc-link" style="anchor-name: --doc-link-solver;" rel="noreferrer" target="_blank">solver <span class="param-doc-description" style="position-anchor: --doc-link-solver;"> solver: {'lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga'}, default='lbfgs'<br>
+<br>
+Algorithm to use in the optimization problem. Default is 'lbfgs'.<br>
+To choose a solver, you might want to consider the following aspects:<br>
+<br>
+- 'lbfgs' is a good default solver because it works reasonably well for a wide<br>
+class of problems.<br>
+- For :term:`multiclass` problems (`n_classes &gt;= 3`), all solvers except<br>
+'liblinear' minimize the full multinomial loss, 'liblinear' will raise an<br>
+error.<br>
+- 'newton-cholesky' is a good choice for<br>
+`n_samples` &gt;&gt; `n_features * n_classes`, especially with one-hot encoded<br>
+categorical features with rare categories. Be aware that the memory usage<br>
+of this solver has a quadratic dependency on `n_features * n_classes`<br>
+because it explicitly computes the full Hessian matrix.<br>
+- For small datasets, 'liblinear' is a good choice, whereas 'sag'<br>
+and 'saga' are faster for large ones;<br>
+- 'liblinear' can only handle binary classification by default. To apply a<br>
+one-versus-rest scheme for the multiclass setting one can wrap it with the<br>
+:class:`~sklearn.multiclass.OneVsRestClassifier`.<br>
+<br>
+.. warning::<br>
+The choice of the algorithm depends on the penalty chosen (`l1_ratio=0`<br>
+for L2-penalty, `l1_ratio=1` for L1-penalty and `0 &lt; l1_ratio &lt; 1` for<br>
+Elastic-Net) and on (multinomial) multiclass support:<br>
+<br>
+================= ======================== ======================<br>
+solver l1_ratio multinomial multiclass<br>
+================= ======================== ======================<br>
+'lbfgs' l1_ratio=0 yes<br>
+'liblinear' l1_ratio=1 or l1_ratio=0 no<br>
+'newton-cg' l1_ratio=0 yes<br>
+'newton-cholesky' l1_ratio=0 yes<br>
+'sag' l1_ratio=0 yes<br>
+'saga' 0&lt;=l1_ratio&lt;=1 yes<br>
+================= ======================== ======================<br>
+<br>
+.. note::<br>
+'sag' and 'saga' fast convergence is only guaranteed on features<br>
+with approximately the same scale. You can preprocess the data with<br>
+a scaler from :mod:`sklearn.preprocessing`.<br>
+<br>
+.. seealso::<br>
+Refer to the :ref:`User Guide &lt;Logistic_regression&gt;` for more<br>
+information regarding :class:`LogisticRegression` and more specifically the<br>
+:ref:`Table &lt;logistic_regression_solvers&gt;`<br>
+summarizing solver/penalty supports.<br>
+<br>
+.. versionadded:: 0.17<br>
+Stochastic Average Gradient (SAG) descent solver. Multinomial support in<br>
+version 0.18.<br>
+.. versionadded:: 0.19<br>
+SAGA solver.<br>
+.. versionchanged:: 0.22<br>
+The default solver changed from 'liblinear' to 'lbfgs' in 0.22.<br>
+.. versionadded:: 1.2<br>
+newton-cholesky solver. Multinomial support in version 1.6.</span></a></td>
+<td class="value">'lbfgs'</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy verbose to clipboard" onclick="copyToClipboard('verbose',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=verbose,-int%2C%20default%3D0" class="param-doc-link" style="anchor-name: --doc-link-verbose;" rel="noreferrer" target="_blank">verbose <span class="param-doc-description" style="position-anchor: --doc-link-verbose;"> verbose: int, default=0<br>
+<br>
+For the liblinear and lbfgs solvers set verbose to any positive<br>
+number for verbosity.</span></a></td>
+<td class="value">0</td>
+</tr>
+<tr class="default odd">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy warm_start to clipboard" onclick="copyToClipboard('warm_start',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=warm_start,-bool%2C%20default%3DFalse" class="param-doc-link" style="anchor-name: --doc-link-warm_start;" rel="noreferrer" target="_blank">warm_start <span class="param-doc-description" style="position-anchor: --doc-link-warm_start;"> warm_start: bool, default=False<br>
+<br>
+When set to True, reuse the solution of the previous call to fit as<br>
+initialization, otherwise, just erase the previous solution.<br>
+Useless for liblinear solver. See :term:`the Glossary &lt;warm_start&gt;`.<br>
+<br>
+.. versionadded:: 0.17<br>
+*warm_start* to support *lbfgs*, *newton-cg*, *sag*, *saga* solvers.</span></a></td>
+<td class="value">False</td>
+</tr>
+<tr class="default even">
+<td><button type="button" class="copy-paste-icon" aria-label="Copy n_jobs to clipboard" onclick="copyToClipboard('n_jobs',
+                          this.parentElement.nextElementSibling)">
+</button></td>
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=n_jobs,-int%2C%20default%3DNone" class="param-doc-link" style="anchor-name: --doc-link-n_jobs;" rel="noreferrer" target="_blank">n_jobs <span class="param-doc-description" style="position-anchor: --doc-link-n_jobs;"> n_jobs: int, default=None<br>
+<br>
+Does not have any effect.<br>
+<br>
+.. deprecated:: 1.8<br>
+`n_jobs` is deprecated in version 1.8 and will be removed in 1.10.</span></a></td>
+<td class="value">None</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    
+        <div class="estimator-table">
+            <details>
+                <summary>Fitted attributes</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Name</th>
+<th data-quarto-table-cell-role="th">Type</th>
+<th data-quarto-table-cell-role="th">Value</th>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=classes_,-ndarray%20of%20shape%20%28n_classes%2C%20%29" class="param-doc-link" style="anchor-name: --doc-link-classes_;" rel="noreferrer" target="_blank">classes_ <span class="param-doc-description" style="position-anchor: --doc-link-classes_;"> classes_: ndarray of shape (n_classes, )<br>
+<br>
+A list of class labels known to the classifier.</span></a></td>
+<td class="fitted-att-type">ndarray[object](2,)</td>
+<td>['no','yes']</td>
+</tr>
+<tr class="default odd">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=coef_,-ndarray%20or%20CSR%20matrix%20of%20shape%20%281%2C%20n_features%29%20or%20%28n_classes%2C%20n_features%29" class="param-doc-link" style="anchor-name: --doc-link-coef_;" rel="noreferrer" target="_blank">coef_ <span class="param-doc-description" style="position-anchor: --doc-link-coef_;"> coef_: ndarray or CSR matrix of shape (1, n_features) or (n_classes, n_features)<br>
+<br>
+Coefficients of the features in the decision function.<br>
+<br>
+`coef_` is of shape (1, n_features) when the given problem is binary.<br>
+<br>
+By default, it will be created as a dense array, but can be turned to<br>
+sparse (CSR format) through :meth:`sparsify` (which can be beneficial<br>
+under L1 regularization when many coefficients are zero), and back to<br>
+dense through :meth:`densify`.</span></a></td>
+<td class="fitted-att-type">ndarray[float64](1, 27)</td>
+<td>[[ 0.19,-0.11,-0.42,..., 0.28,-0.22, 0.18]]</td>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=intercept_,-ndarray%20of%20shape%20%281%2C%29%20or%20%28n_classes%2C%29" class="param-doc-link" style="anchor-name: --doc-link-intercept_;" rel="noreferrer" target="_blank">intercept_ <span class="param-doc-description" style="position-anchor: --doc-link-intercept_;"> intercept_: ndarray of shape (1,) or (n_classes,)<br>
+<br>
+Intercept (a.k.a. bias) added to the decision function.<br>
+<br>
+If `fit_intercept` is set to False, the intercept is set to zero.<br>
+`intercept_` is of shape (1,) when the given problem is binary.</span></a></td>
+<td class="fitted-att-type">ndarray[float64](1,)</td>
+<td>[-0.08]</td>
+</tr>
+<tr class="default odd">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=n_features_in_,-int" class="param-doc-link" style="anchor-name: --doc-link-n_features_in_;" rel="noreferrer" target="_blank">n_features_in_ <span class="param-doc-description" style="position-anchor: --doc-link-n_features_in_;"> n_features_in_: int<br>
+<br>
+Number of features seen during :term:`fit`.<br>
+<br>
+.. versionadded:: 0.24</span></a></td>
+<td class="fitted-att-type">int</td>
+<td>27</td>
+</tr>
+<tr class="default even">
+<td class="param"><a href="https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=n_iter_,-ndarray%20of%20shape%20%281%2C%20%29" class="param-doc-link" style="anchor-name: --doc-link-n_iter_;" rel="noreferrer" target="_blank">n_iter_ <span class="param-doc-description" style="position-anchor: --doc-link-n_iter_;"> n_iter_: ndarray of shape (1, )<br>
+<br>
+Actual number of iterations for all classes.<br>
+<br>
+.. versionchanged:: 0.20<br>
+<br>
+In SciPy &lt;= 1.0.0 the number of lbfgs iterations may exceed<br>
+``max_iter``. ``n_iter_`` will now report at most ``max_iter``.</span></a></td>
+<td class="fitted-att-type">ndarray[int32](1,)</td>
+<td>[15]</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    </div></div></div></div></div></div></div><script>/*  Authors: The scikit-learn developers
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+function copyToClipboard(text, element) {
+    // Get the parameter prefix from the closest toggleable content
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const fullParamName = paramPrefix ? `${paramPrefix}${text}` : text;
+
+    const originalStyle = element.style;
+    const computedStyle = window.getComputedStyle(element);
+    const originalWidth = computedStyle.width;
+    const originalHTML = element.innerHTML.replace('Copied!', '');
+
+    navigator.clipboard.writeText(fullParamName)
+        .then(() => {
+            element.style.width = originalWidth;
+            element.style.color = 'green';
+            element.innerHTML = "Copied!";
+
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Failed to copy:', err);
+            element.style.color = 'red';
+            element.innerHTML = "Failed!";
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        });
+    return false;
+}
+
+document.querySelectorAll('.copy-paste-icon').forEach(function(element) {
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+
+    const parent = element.parentElement;
+    if (!parent || !parent.nextElementSibling) {
+        console.warn('Expected copy-paste icon is missing from the DOM structure');
+        return;
+    }
+
+    const paramName = element.parentElement.nextElementSibling
+        .textContent.trim().split(' ')[0];
+    const fullParamName = paramPrefix ? `${paramPrefix}${paramName}` : paramName;
+
+    element.setAttribute('title', fullParamName);
+});
+
+/**
+ * Copy the list of feature names formatted as a Python list.
+ *
+ * @param {HTMLElement} element - The copy button inside a `.features` block; its siblings
+ *   contain a `details` element and a table containing feature named.
+ * @returns {boolean} Always returns `false` so callers can prevent the default click behavior.
+ */
+function copyFeatureNamesToClipboard(element) {
+    var detailsElem = element.closest('.features').querySelector('details');
+    var wasOpen = detailsElem.open;
+    detailsElem.open = true;
+    var content = element.closest('.features').querySelector('tbody')
+                  .innerText.trim();
+    if (!wasOpen) detailsElem.open = false;
+    const rows = content.split('\n').map(row => `    "${row}"`);
+    const formattedText = `[\n${rows.join(',\n')},\n]`;
+    const originalHTML = element.innerHTML.replace('✔', '');
+    const originalStyle = element.style;
+    const copyMark = document.createElement('span');
+    copyMark.innerHTML = '✔';
+    copyMark.style.color = 'blue';
+    copyMark.style.fontSize = '1em';
+
+    navigator.clipboard.writeText(formattedText)
+        .then(() => {
+            element.style.display = 'none';
+            element.parentElement.appendChild(copyMark);
+
+            setTimeout(() => {
+                copyMark.remove();
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 1000);
+        })
+        .catch(err => {
+            console.error('Failed to copy:', err);
+            element.style.color = 'orange';
+            element.innerHTML = "Failed!";
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 1000);
+        });
+    return false;
+}
+/**
+ * Adapted from Skrub
+ * https://github.com/skrub-data/skrub/blob/403466d1d5d4dc76a7ef569b3f8228db59a31dc3/skrub/_reporting/_data/templates/report.js#L789
+ * @returns "light" or "dark"
+ */
+function detectTheme(element) {
+    const body = document.querySelector('body');
+
+    // Check VSCode theme
+    const themeKindAttr = body.getAttribute('data-vscode-theme-kind');
+    const themeNameAttr = body.getAttribute('data-vscode-theme-name');
+
+    if (themeKindAttr && themeNameAttr) {
+        const themeKind = themeKindAttr.toLowerCase();
+        const themeName = themeNameAttr.toLowerCase();
+
+        if (themeKind.includes("dark") || themeName.includes("dark")) {
+            return "dark";
+        }
+        if (themeKind.includes("light") || themeName.includes("light")) {
+            return "light";
+        }
+    }
+
+    // Check Jupyter theme
+    if (body.getAttribute('data-jp-theme-light') === 'false') {
+        return 'dark';
+    } else if (body.getAttribute('data-jp-theme-light') === 'true') {
+        return 'light';
+    }
+
+    // Guess based on a parent element's color
+    const color = window.getComputedStyle(element.parentNode, null).getPropertyValue('color');
+    const match = color.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*$/i);
+    if (match) {
+        const [r, g, b] = [
+            parseFloat(match[1]),
+            parseFloat(match[2]),
+            parseFloat(match[3])
+        ];
+
+        // https://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
+        const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+
+        if (luma > 180) {
+            // If the text is very bright we have a dark theme
+            return 'dark';
+        }
+        if (luma < 75) {
+            // If the text is very dark we have a light theme
+            return 'light';
+        }
+        // Otherwise fall back to the next heuristic.
+    }
+
+    // Fallback to system preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+
+function forceTheme(elementId) {
+    const estimatorElement = document.querySelector(`#${elementId}`);
+    if (estimatorElement === null) {
+        console.error(`Element with id ${elementId} not found.`);
+    } else {
+        const theme = detectTheme(estimatorElement);
+        estimatorElement.classList.add(theme);
+    }
+}
+
+forceTheme('sk-container-id-1');</script>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>test_predictions <span class="op">=</span> best_model.predict(X_test)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>majority_class <span class="op">=</span> y_train.mode().iloc[<span class="dv">0</span>]</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>baseline_predictions <span class="op">=</span> np.repeat(majority_class, <span class="bu">len</span>(y_test))</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> pd.DataFrame([</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Model"</span>: best_model_name,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Accuracy"</span>: accuracy_score(y_test, test_predictions),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Precision (yes)"</span>: precision_score(</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>            y_test, test_predictions, pos_label<span class="op">=</span><span class="st">"yes"</span>, zero_division<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Recall (yes)"</span>: recall_score(</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>            y_test, test_predictions, pos_label<span class="op">=</span><span class="st">"yes"</span>, zero_division<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"F1 (yes)"</span>: f1_score(</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>            y_test, test_predictions, pos_label<span class="op">=</span><span class="st">"yes"</span>, zero_division<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Model"</span>: <span class="st">"Majority-class baseline"</span>,</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Accuracy"</span>: accuracy_score(y_test, baseline_predictions),</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Precision (yes)"</span>: precision_score(</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>            y_test, baseline_predictions, pos_label<span class="op">=</span><span class="st">"yes"</span>, zero_division<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Recall (yes)"</span>: recall_score(</span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>            y_test, baseline_predictions, pos_label<span class="op">=</span><span class="st">"yes"</span>, zero_division<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">"F1 (yes)"</span>: f1_score(</span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>            y_test, baseline_predictions, pos_label<span class="op">=</span><span class="st">"yes"</span>, zero_division<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Table 2. Held-out test metrics for the selected model and majority baseline."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Table 2. Held-out test metrics for the selected model and majority baseline.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>results.style.<span class="bu">format</span>({</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Accuracy"</span>: <span class="st">"</span><span class="sc">{:.3f}</span><span class="st">"</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Precision (yes)"</span>: <span class="st">"</span><span class="sc">{:.3f}</span><span class="st">"</span>,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Recall (yes)"</span>: <span class="st">"</span><span class="sc">{:.3f}</span><span class="st">"</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"F1 (yes)"</span>: <span class="st">"</span><span class="sc">{:.3f}</span><span class="st">"</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<style type="text/css">
+</style>
+
+<table id="T_d60fb" class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_d60fb_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Model</th>
+<th id="T_d60fb_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Accuracy</th>
+<th id="T_d60fb_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Precision (yes)</th>
+<th id="T_d60fb_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">Recall (yes)</th>
+<th id="T_d60fb_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">F1 (yes)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th id="T_d60fb_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">0</th>
+<td id="T_d60fb_row0_col0" class="data row0 col0">Logistic regression</td>
+<td id="T_d60fb_row0_col1" class="data row0 col1">0.586</td>
+<td id="T_d60fb_row0_col2" class="data row0 col2">0.538</td>
+<td id="T_d60fb_row0_col3" class="data row0 col3">0.622</td>
+<td id="T_d60fb_row0_col4" class="data row0 col4">0.577</td>
+</tr>
+<tr class="even">
+<th id="T_d60fb_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">1</th>
+<td id="T_d60fb_row1_col0" class="data row1 col0">Majority-class baseline</td>
+<td id="T_d60fb_row1_col1" class="data row1 col1">0.545</td>
+<td id="T_d60fb_row1_col2" class="data row1 col2">0.000</td>
+<td id="T_d60fb_row1_col3" class="data row1 col3">0.000</td>
+<td id="T_d60fb_row1_col4" class="data row1 col4">0.000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cm <span class="op">=</span> confusion_matrix(y_test, test_predictions, labels<span class="op">=</span>[<span class="st">"no"</span>, <span class="st">"yes"</span>])</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>confusion <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    cm,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>pd.Index([<span class="st">"no"</span>, <span class="st">"yes"</span>], name<span class="op">=</span><span class="st">"Actual"</span>),</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>pd.Index([<span class="st">"no"</span>, <span class="st">"yes"</span>], name<span class="op">=</span><span class="st">"Predicted"</span>),</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Table 3. Confusion matrix for the selected model on the held-out test set."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Table 3. Confusion matrix for the selected model on the held-out test set.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>display(confusion)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Predicted  no  yes
+Actual            
+no         30   24
+yes        17   28</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>cm_long <span class="op">=</span> (</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    confusion.rename_axis(index<span class="op">=</span><span class="st">"Actual"</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    .melt(id_vars<span class="op">=</span><span class="st">"Actual"</span>, var_name<span class="op">=</span><span class="st">"Predicted"</span>, value_name<span class="op">=</span><span class="st">"Count"</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>heatmap <span class="op">=</span> alt.Chart(cm_long).mark_rect().encode(</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>alt.X(<span class="st">"Predicted:N"</span>, sort<span class="op">=</span>[<span class="st">"no"</span>, <span class="st">"yes"</span>], title<span class="op">=</span><span class="st">"Predicted outcome"</span>),</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>alt.Y(<span class="st">"Actual:N"</span>, sort<span class="op">=</span>[<span class="st">"no"</span>, <span class="st">"yes"</span>], title<span class="op">=</span><span class="st">"Actual outcome"</span>),</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>alt.Color(<span class="st">"Count:Q"</span>, scale<span class="op">=</span>alt.Scale(scheme<span class="op">=</span><span class="st">"blues"</span>), title<span class="op">=</span><span class="st">"Students"</span>),</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    tooltip<span class="op">=</span>[<span class="st">"Actual:N"</span>, <span class="st">"Predicted:N"</span>, <span class="st">"Count:Q"</span>],</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>).properties(width<span class="op">=</span><span class="dv">300</span>, height<span class="op">=</span><span class="dv">260</span>, title<span class="op">=</span><span class="st">"Held-out test confusion matrix"</span>)</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>cell_text <span class="op">=</span> heatmap.mark_text(fontSize<span class="op">=</span><span class="dv">18</span>).encode(text<span class="op">=</span><span class="st">"Count:Q"</span>, color<span class="op">=</span>alt.value(<span class="st">"black"</span>))</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>heatmap <span class="op">+</span> cell_text</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+
+
+
+  <meta charset="UTF-8">
+  <style>
+    #unnamed-chunk-11-altair-viz.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #unnamed-chunk-11-altair-viz.vega-embed details,
+    #unnamed-chunk-11-altair-viz.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.1"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+
+
+  <div id="unnamed-chunk-11-altair-viz"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}}, "layer": [{"mark": {"type": "rect"}, "encoding": {"color": {"field": "Count", "scale": {"scheme": "blues"}, "title": "Students", "type": "quantitative"}, "tooltip": [{"field": "Actual", "type": "nominal"}, {"field": "Predicted", "type": "nominal"}, {"field": "Count", "type": "quantitative"}], "x": {"field": "Predicted", "sort": ["no", "yes"], "title": "Predicted outcome", "type": "nominal"}, "y": {"field": "Actual", "sort": ["no", "yes"], "title": "Actual outcome", "type": "nominal"}}, "title": "Held-out test confusion matrix"}, {"mark": {"type": "text", "fontSize": 18}, "encoding": {"color": {"value": "black"}, "text": {"field": "Count", "type": "quantitative"}, "tooltip": [{"field": "Actual", "type": "nominal"}, {"field": "Predicted", "type": "nominal"}, {"field": "Count", "type": "quantitative"}], "x": {"field": "Predicted", "sort": ["no", "yes"], "title": "Predicted outcome", "type": "nominal"}, "y": {"field": "Actual", "sort": ["no", "yes"], "title": "Actual outcome", "type": "nominal"}}, "title": "Held-out test confusion matrix"}], "data": {"name": "data-85c3e0244c861e6991ffd690fe61c05f"}, "height": 260, "width": 300, "$schema": "https://vega.github.io/schema/vega-lite/v6.4.1.json", "datasets": {"data-85c3e0244c861e6991ffd690fe61c05f": [{"Actual": "no", "Predicted": "no", "Count": 30}, {"Actual": "yes", "Predicted": "no", "Count": 17}, {"Actual": "no", "Predicted": "yes", "Count": 24}, {"Actual": "yes", "Predicted": "yes", "Count": 28}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('unnamed-chunk-11-altair-viz');
+      vegaEmbed("#unnamed-chunk-11-altair-viz", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+
+
+</div>
+</div>
+<p><strong>Figure 3.</strong> Confusion matrix for the selected model on the held-out test set.</p>
+<p>The five-fold cross-validation comparison selected logistic regression, with a mean validation accuracy of 64.2% (standard deviation 2.4 percentage points). On the held-out test set, it achieved 58.6% accuracy, compared with 54.5% for the majority-class baseline. For students who attended paid classes, precision was 53.8%, recall was 62.2%, and F1 was 0.577. The confusion matrix shows 28 correctly identified students who attended classes, 30 correctly identified students who did not, 24 false positives, and 17 false negatives. Table 1 is used only for model selection; Tables 2 and 3 and Figure 2 report final test-set performance.</p>
+</section>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<p>The results provide a limited answer to our research question. Logistic regression performed best in cross-validation, but its 58.6% test accuracy was only slightly higher than the 54.5% majority-class baseline. It correctly identified 28 of the 45 students who attended paid mathematics classes and 30 of the 54 who did not. However, it also predicted tutoring for 24 students who did not attend, and missed 17 who did. So, while the selected characteristics may help distinguish between the two groups, they do not give a reliable prediction for an individual student.</p>
+<p>We expected family and study-related characteristics to provide some useful information, since decisions about extra classes may be connected to students’ learning experiences and family circumstances. But this dataset cannot tell us why a student attended tutoring, and our model does not include factors such as family income, academic goals, or a student’s perceived need for extra help. The data also cover only 395 students from two schools in Portugal, so the results may not apply to students in other schools or countries. Finally, these are associations used for prediction; they do not show that a particular background or study habit causes a student to attend paid classes.</p>
+<p>A useful next step would be to repeat the analysis with students from more schools and include measures of tutoring access, family resources, and reasons for seeking extra help. That could help determine whether the modest performance here reflects limits in the predictors, the small sample, or both.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Aurini, Janice, and Scott Davies. “The transformation of private tutoring: Education in a franchise form.” The Canadian Journal of Sociology 29, no. 3 (2004): 419-438.</p>
+<p>Cortez, Paulo. 2008. Student Performance. UCI Machine Learning Repository. https://doi.org/10.24432/C5TG7T.</p>
+<p>Hille, Adrian, C. Katharina Spieß, and Mila Staneva. “More and more students, especially those from middle-income households, are using private tutoring.” DIW Economic Bulletin 6, no. 6 (2016): 63-71.</p>
+<p>Qu, Qing. “Analysis of the Factors Affecting Academic Performance of Students in Two Portuguese High Schools: School.” In Proceedings of the 2025 10th International Conference on Social Sciences and Economic Development (ICSSED 2025), p.&nbsp;39. Springer Nature, 2025.</p>
+<p>Teixeira, Pedro N., Pedro Luís Silva, Ricardo Biscaia, and Carla Sá. “Competition and diversification in higher education: Analysing impacts on access and equity in the case of Portugal.” European Journal of Education 57, no. 2 (2022): 235-254.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
