@@ -1,0 +1,8 @@
+Type: project
+Version: 0.1.0
+Description: R packages used by this project. renv.lock records their versions.
+Depends:
+    tidyverse (== 2.0.0),
+    reticulate (== 1.47.0),
+    knitr (== 1.52),
+    rmarkdown (== 2.32)
