@@ -16,52 +16,55 @@ We use the mathematics file of the *Student Performance* data set (Cortez, 2008)
 
 The report downloads the data into `data/raw/` each time it is rendered, and writes the cleaned data and the train/test split to `data/processed/`.
 
-## How to run the analysis
+## Usage
 
-The analysis uses R for data download and cleaning, and Python (called from R through the reticulate package) for the train/test split, exploratory analysis and modelling.
+We run the analysis in a Docker container so everyone uses the same software and package versions. The image is avaliable on [Docker Hub](https://hub.docker.com/r/arunark3/dsci-522-group-34-repository).
 
-**Requirements.** Install the following, then check each with the command shown:
-
-| Program | Version | Check |
-|---|---|---|
-| [R](https://cran.r-project.org/) | 4.6 or later | `R --version` |
-| [uv](https://docs.astral.sh/uv/getting-started/installation/) | 0.9 or later | `uv --version` |
-| [Quarto](https://quarto.org/docs/get-started/) | 1.6 or later | `quarto --version` |
-
-On Windows, run the commands below in Git Bash. If `Rscript` is not found, either add R's `bin` folder to your PATH, or open `DSCI-522-Group-34-Repository.Rproj` in RStudio and run the R commands in its Console.
-
-**1. Clone the repository and move into it.**
+Install and launch [Docker Desktop](https://www.docker.com/get-started/). Clone the repository and move into it.
 
 ```bash
 git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-34-Repository.git
 cd DSCI-522-Group-34-Repository
 ```
 
-**2. Create the Python environment.** This installs Python 3.14 (if needed) and the exact package versions in `uv.lock` into a `.venv` folder.
+Run the following commands from the repository root.
+
+### 1. Create an SSH key
+
+If you do not already have an Ed25519 SSH key at the default location, run the following command and press Enter at each prompt.
 
 ```bash
-uv sync
+ssh-keygen -t ed25519
 ```
 
-**3. Restore the R packages.** This installs the exact R package versions recorded in `renv.lock` into a project library. The first run takes a few minutes.
+If the public key is missing when you first run the container, Docker can create a directory named `~/.ssh/id_ed25519.pub`. If that ever happens, remove the directory and run `ssh-keygen` before trying to connect to the container over SSH. 
+
+### 2. Download the Docker image
 
 ```bash
-Rscript -e 'renv::restore(prompt = FALSE)'
+docker compose pull
 ```
 
-**4. Render the report.**
+### 3. Run the analysis and reder the report
 
 ```bash
-quarto render analysis/predicting-paid-math-classes.qmd
+docker compose run --rm analysis-env uv run quarto render analysis/predicting-paid-math-classes.qmd
 ```
 
-Open `analysis/predicting-paid-math-classes.html` in a web browser to read the report. Rendering needs an internet connection because the data are downloaded from UCI.
+Rendering downloads the data from the UCI Mahine Learning Repository, so it will requires a internet connection. Open `analysis/predicting-paid-math-classes.html` in your browser to view the report.
+
+The `--rm` option automatically removes the container when rendering finishes. 
+
+## Contributing
+
+We welcome contributions. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Dependencies
 
 - R 4.6 with the packages pinned in [`renv.lock`](renv.lock), mainly tidyverse, reticulate, rmarkdown and knitr.
 - Python 3.14 with the packages listed in [`pyproject.toml`](pyproject.toml) and pinned in [`uv.lock`](uv.lock): pandas, scikit-learn, Altair, ipykernel, nbformat, nbclient, PyYAML and tabulate.
 - [uv](https://docs.astral.sh/uv/), [renv](https://rstudio.github.io/renv/) and [Quarto](https://quarto.org/).
+- The Docker image is built from the [`Dockerfile`](Dockerfile), which installs the software and packages needed to run the analysis.
 
 ## Repository structure
 
@@ -99,10 +102,6 @@ Example prompts:
 
 - "Update our README for the UCI Student Performance data set, and our repository link."
 - "How do I add reticulate to our renv lockfile?"
-
-## Contributing
-
-We welcome contributions. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## References
 
